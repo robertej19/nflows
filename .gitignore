@@ -1,3 +1,10 @@
+*.pkl
+*.jpeg
+*.png
+*.pdf
+*.jpg
+*.dat
+
 # Development files and python cache
 /*.pyc
 /*.egg
