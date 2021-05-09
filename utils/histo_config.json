@@ -1,0 +1,94 @@
+{
+    "Ranges": [{
+        "type":"config",
+        "phi":[[-180,180,720],"Deg."],
+        "theta":[[0,70,300],"Deg."],
+        "phitrento":[[0,360,720],"Deg."],
+        "t":[[0,7,100],"-$GeV^2$"],
+        "xB":[[0,1,100],""],
+        "Q2":[[0,12,100],"$GeV^2$"],
+        "W":[[2,4.5,100],"$GeV$"]
+    }],
+
+    "Etheta": [{
+        "type":"1D",
+        "label":"Electron \\theta",
+        "unit":"Degrees",
+        "title":"Electron_Theta"        
+    }],
+
+    "Ptheta": [{
+        "type":"1D",
+        "label_x":"Proton \\theta",
+        "label_y":"Counts",
+        "unit":"Degrees",
+        "title":"Proton_Theta"        
+    }],
+
+    "PthetaPphi": [{
+        "type":"2D",
+        "data_x":"Pphi",
+        "data_y":"Ptheta",
+        "type_x":"phi",
+        "type_y":"theta",
+        "label_x":"Proton $\\phi$",
+        "label_y":"Proton $\\theta$",
+        "filename":"Proton_Theta_Proton_Phi"       
+    }],
+
+    "GthetaGphi": [{
+        "type":"2D",
+        "data_x":"Gphi",
+        "data_y":"Gtheta",
+        "type_x":"phi",
+        "type_y":"theta",
+        "label_x":"Photon $\\theta$",
+        "label_y":"Photon $\\theta$",
+        "filename":"Photon_Theta_Photon_Phi"       
+    }],
+
+    "TrentoPtheta": [{
+        "type":"2D",
+        "data_x":"phi1",
+        "data_y":"Ptheta",
+        "type_x":"phitrento",
+        "type_y":"theta",
+        "label_x":"Lepton-Hadron Angle $\\phi$",
+        "label_y":"Photon $\\theta$",
+        "filename":"PhiTrento_PTheta"       
+    }],
+
+    "xbQ2": [{
+        "type":"2D",
+        "data_x":"xB",
+        "data_y":"Q2",
+        "type_x":"xB",
+        "type_y":"Q2",
+        "label_x":"$x_B$",
+        "label_y":"$Q^2$",
+        "filename":"BjorkenX_Q2"       
+    }],
+
+    "tW": [{
+        "type":"2D",
+        "data_x":"t",
+        "data_y":"W",
+        "type_x":"t",
+        "type_y":"W",
+        "label_x":"Momentum Transfer t",
+        "label_y":"W",
+        "filename":"W_t"       
+    }],
+
+
+    "EthetaEphi": [{
+        "type":"2D",
+        "data_x":"Ephi",
+        "data_y":"Etheta",
+        "type_x":"phi",
+        "type_y":"theta",
+        "label_x":"Electron $\\phi$",
+        "label_y":"Electron $\\theta$",
+        "filename":"Electron_Theta_Electron_Phi"       
+    }]
+}

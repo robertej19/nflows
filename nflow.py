@@ -139,6 +139,7 @@ def cartesian_converter(xznp):
 # Define device to be used
 dev = "cuda:0" if torch.cuda.is_available() else "cpu"
 device = torch.device(dev)
+print(dev)
 
 #read the data, with the defined data class
 xz = dataXZ()
@@ -175,7 +176,7 @@ plt.savefig("slurm/figures/raw_distribution_01.pdf")
 # plt.savefig("slurm/figures/raw_distribution_23.pdf")
 
 #construct the model
-num_layers = 6#12
+num_layers = 18#12
 num_features = 16
 base_dist = StandardNormal(shape=[num_features])
 #base_dist = DiagonalNormal(shape=[3])
@@ -184,7 +185,7 @@ for _ in range(num_layers):
     transforms.append(ReversePermutation(features=num_features))
 
     transforms.append(MaskedUMNNAutoregressiveTransform(features=num_features, 
-                                                          hidden_features=200)) 
+                                                          hidden_features=20)) 
                                                           #context_features=len(in_columns)))
     #transforms.append(MaskedAffineAutoregressiveTransform(features=num_features, 
     #                                                      hidden_features=100))
@@ -239,7 +240,7 @@ for i in range(num_iter):
     #y = sampleDict["xwithoutPid"][:, 1:2] 
     #print(x)
     optimizer.zero_grad()
-    loss = -flow.log_prob(inputs=x).mean()
+    loss = -flow.log_prob(inputs=x.float64()).mean()
     loss.backward()
     optimizer.step()
     
@@ -254,65 +255,72 @@ for i in range(num_iter):
       print("Rate is {} seconds per epoch".format(elapsedTime/i))
       print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(num_iter+1-i)))
 
-    if ((i+1)%20) == 0:
+    if ((i+1)%100) == 0:
                     run_time = datetime.now()
                     elapsedTime = (run_time - start )
                     
                     bbb = 50000
-                    torch.save(flow.state_dict(), "trainedmodel.pkl")
-                    z1= flow.sample(20).cpu().detach().numpy()
-                    z2= flow.sample(20).cpu().detach().numpy()
-                    z3= flow.sample(20).cpu().detach().numpy()
-                    z4= flow.sample(20).cpu().detach().numpy()
-                    z = np.concatenate((z1,z2,z3,z4),axis=0)
-                    #print(z)
-                    #sys.exit()
-                    print('gen z done')
+                    torch.save(flow.state_dict(), "trainedmodel_{}_{:.2f}.pkl".format(i,loss.item()))
+    #                 z1= flow.sample(200).cpu().detach().numpy()
+    #                 print("samp 1")
+    #                 z2= flow.sample(200).cpu().detach().numpy()
+    #                 print("samp 2")
 
-                    sampleDict = xz.sample(5)
-                    x = sampleDict["x"][:, 0:num_features] 
-                    x = x.detach().numpy()
+    #                 z3= flow.sample(200).cpu().detach().numpy()
+    #                 print("samp 3")
 
-                    #plot_histo_1D(x,z)
+    #                 z4= flow.sample(200).cpu().detach().numpy()
+    #                 print("samp 4")
 
-                    #f1 = meter(x,z,0)
-                    #f2 = meter(x,z,1)
-                    #f3 = meter(x,z,2)
-                    #f4 = meter(x,z,3)
+    #                 z = np.concatenate((z1,z2,z3,z4),axis=0)
+    #                 # #print(z)
+    #                 # #sys.exit()
+    #                 # print('gen z done')
 
-                    bin_size = [100,100]
-                    fig, ax = plt.subplots(figsize =(10, 7)) 
-                    plt.rcParams["font.size"] = "16"
-                    ax.set_xlabel("Electron Momentum x")  
-                    ax.set_ylabel("Electron Momentum y")
-                    plt.title('NFlow Generated Distribution - Iteration {}'.format(i))
+    #                 # sampleDict = xz.sample(5)
+    #                 # x = sampleDict["x"][:, 0:num_features] 
+    #                 # x = x.detach().numpy()
 
-                    plt.hist2d(z[:,1], z[:,2],bins =bin_size,norm=mpl.colors.LogNorm())# cmap = plt.cm.nipy_spectral) 
-                    #plt.xlim([-2,2])
-                    #plt.ylim([-2,2])
-                    #plt.colorbar()
-                    titlenum = i
-                    if titlenum < 10:
-                      plotname = "pics/iter_00{}.jpeg".format(i)
-                    elif titlenum < 100:
-                      plotname = "pics/iter_0{}.jpeg".format(i)
-                    else:
-                      plotname = "pics/iter_{}.jpeg".format(i)
-                    #plt.show()
-                    plt.savefig(plotname)
-                    plt.close()
+    #                 # #plot_histo_1D(x,z)
+
+    #                 # #f1 = meter(x,z,0)
+    #                 # #f2 = meter(x,z,1)
+    #                 # #f3 = meter(x,z,2)
+    #                 # #f4 = meter(x,z,3)
+
+    #                 bin_size = [100,100]
+    #                 fig, ax = plt.subplots(figsize =(10, 7)) 
+    #                 plt.rcParams["font.size"] = "16"
+    #                 ax.set_xlabel("Electron Momentum x")  
+    #                 ax.set_ylabel("Electron Momentum y")
+    #                 plt.title('NFlow Generated Distribution - Iteration {}'.format(i))
+
+    #                 plt.hist2d(z[:,1], z[:,2],bins =bin_size,norm=mpl.colors.LogNorm())# cmap = plt.cm.nipy_spectral) 
+    #                 #plt.xlim([-2,2])
+    #                 #plt.ylim([-2,2])
+    #                 #plt.colorbar()
+    #                 titlenum = i
+    #                 if titlenum < 10:
+    #                   plotname = "pics/iter_00{}.jpeg".format(i)
+    #                 elif titlenum < 100:
+    #                   plotname = "pics/iter_0{}.jpeg".format(i)
+    #                 else:
+    #                   plotname = "pics/iter_{}.jpeg".format(i)
+    #                 #plt.show()
+    #                 plt.savefig(plotname)
+    #                 plt.close()
 
 
-                    #if f1[1]*f2[1]*f3[1]*f4[1] < 1:
-                    #print("EM Distance   Values: F0: {:.5f}  F1: {:.5f}  F2: {:.5f} F3: {:.5f} ".format((f1[1]),(f2[1]),(f3[1]),(f4[1]),))
-                    #print("EM Distance   Values: F0: {:.5f}  F1: {:.5f}  F2: {:.5f} F3: {:.5f} ".format((f1[1]),(f2[1]),(f2[1]),(f2[1]),))
-                    #if f1[1]*f2[1] < .001:
-                      #break
+                    # #if f1[1]*f2[1]*f3[1]*f4[1] < 1:
+                    # #print("EM Distance   Values: F0: {:.5f}  F1: {:.5f}  F2: {:.5f} F3: {:.5f} ".format((f1[1]),(f2[1]),(f3[1]),(f4[1]),))
+                    # #print("EM Distance   Values: F0: {:.5f}  F1: {:.5f}  F2: {:.5f} F3: {:.5f} ".format((f1[1]),(f2[1]),(f2[1]),(f2[1]),))
+                    # #if f1[1]*f2[1] < .001:
+                    #   #break
 
-                    #f1_kd.append(f1[0])
-                    #f1_em.append(f1[1])
-                    #f1_js.append(f1[2])
-                    #f2_em.append(f2[1])
+                    # #f1_kd.append(f1[0])
+                    # #f1_em.append(f1[1])
+                    # #f1_js.append(f1[2])
+                    # #f2_em.append(f2[1])
 
 tm_name = "trainedmodel_final.pkl"
 torch.save(flow.state_dict(), tm_name)
