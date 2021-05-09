@@ -34,10 +34,7 @@ email = True
 
 #TODO:
 #Time logging
-#Quantile Distribution implementation
-#Save generated data to pandas DF
-#Do doodle poll
-# Re open Iddo lecture notes
+#
 
 #Create data class
 class dataXZ:
@@ -47,7 +44,7 @@ class dataXZ:
   """
   def __init__(self, standard = False):
     with open('data/pi0.pkl', 'rb') as f:
-        xz = np.array(pickle.load(f), dtype=np.float32)
+        xz = np.array(pickle.load(f), dtype=np.float64)
         #xz = xz[:, 1:]
         # z = xz[:, 16:]
         x = cartesian_converter(xz)
@@ -136,6 +133,7 @@ def cartesian_converter(xznp):
 
   return out
 
+print("before cuda")
 # Define device to be used
 dev = "cuda:0" if torch.cuda.is_available() else "cpu"
 device = torch.device(dev)
@@ -194,7 +192,7 @@ for _ in range(num_layers):
 
 transform = CompositeTransform(transforms)
 
-flow = Flow(transform, base_dist).to(device)
+flow = Flow(transform, base_dist).double().to(device)
 optimizer = optim.Adam(flow.parameters())
 print("number of params: ", sum(p.numel() for p in flow.parameters()))
 
@@ -215,7 +213,7 @@ def meter(dist1,dist2,feature):
   jsd = distance.jensenshannon(dist1[:,feature],dist2[:,feature]) ** 2
   return [kld, emd, jsd]
 
-num_iter = 4000
+num_iter = 40000
 
 losses = []
 f1_kd = []
@@ -235,12 +233,14 @@ for i in range(num_iter):
     # print(x)
     # print(y)
     
-    sampleDict = xz.sample(1000)
+    sampleDict = xz.sample(100)
     x = sampleDict["xwithoutPid"][:, 0:num_features].to(device)
     #y = sampleDict["xwithoutPid"][:, 1:2] 
     #print(x)
+    #x = torch.tensor(x, dtype=torch.float64)
+
     optimizer.zero_grad()
-    loss = -flow.log_prob(inputs=x.float64()).mean()
+    loss = -flow.log_prob(inputs=x).mean()
     loss.backward()
     optimizer.step()
     
@@ -260,7 +260,7 @@ for i in range(num_iter):
                     elapsedTime = (run_time - start )
                     
                     bbb = 50000
-                    torch.save(flow.state_dict(), "trainedmodel_{}_{:.2f}.pkl".format(i,loss.item()))
+                    torch.save(flow.state_dict(), "trainedmodel_{}_100_{:.2f}.pkl".format(i,loss.item()))
     #                 z1= flow.sample(200).cpu().detach().numpy()
     #                 print("samp 1")
     #                 z2= flow.sample(200).cpu().detach().numpy()
