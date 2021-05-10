@@ -17,7 +17,11 @@ from nflows.transforms.base import CompositeTransform
 from nflows.transforms.autoregressive import MaskedAffineAutoregressiveTransform
 from nflows.transforms.permutations import ReversePermutation
 
+from sklearn.model_selection import train_test_split
 
+def split_data(data,test_size=0.2,random_state=42):
+    data_train, data_test = train_test_split(data, test_size=test_size, random_state=random_state) 
+    return data_train, data_test
 
 def make_model(num_layers,num_features,num_hidden_features,device):
     base_dist = StandardNormal(shape=[num_features])

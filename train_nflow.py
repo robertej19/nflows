@@ -36,25 +36,28 @@ device = torch.device(dev)
 print(dev)
 
 #Define hyperparameters
-num_layers = 16
-num_features = 16
-num_hidden_features = 32
+#The number of featuers is just the length of the feature subset, or 16 if "all"
+feature_subset = [0,1,2,3] #Just electron features
+#feature_subset = [4,5,6,7] #Just proton features
+#feature_subset = "all" #All 16 features
+
+#These are parameters for the Normalized Flow model
+num_layers = 6
+num_hidden_features = 80
+
+#These are training parameters
 num_epoch = 10000
 training_sample_size = 400
 
 
+if feature_subset == "all":
+  num_features = 16
+else:
+  num_features = len(feature_subset)
+
+
 #read the data, with the defined data class
-xz = dataXZ.dataXZ()
-
-# QuantTran = xz.qt
-
-# sampleDict = xz.sample(3)
-# x = sampleDict["x"]
-# qt_params = QuantTran.get_params(deep=True)
-# print(qt_params)
-# X = QuantTran.inverse_transform(x)
-
-
+xz = dataXZ.dataXZ(feature_subset=feature_subset)
 
 
 #construct an nflow model

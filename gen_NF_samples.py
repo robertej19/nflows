@@ -37,7 +37,9 @@ device = torch.device(dev)
 #reonstruct an nflow model
 model_path = "models/"
 #model_name = "TM_16_18_20_100_799_-15.19.pt" #For initial double precision studies
-model_name = "TM_4_6_4_100_3199_-0.88.pt" #4 features with QD
+#model_name = "TM_4_6_4_100_3199_-0.88.pt" #4 features with QD
+model_name = "TM_16_16_32_400_4399_-14.42.pt" #16 feature with QD
+
 
 params = model_name.split("_")
 num_features = int(params[1])
@@ -53,33 +55,40 @@ print("number of params: ", sum(p.numel() for p in flow.parameters()))
 flow.load_state_dict(torch.load(model_path+model_name))
 flow.eval()
 
+maxloops = 200 #Number of overall loops
+max_range = 10#Number of sets per loop
+sample_size = 200 #Number of samples per set
 
-zs = []
-max_range = 5
-sample_size = 5000
 
-start = datetime.now()
-start_time = start.strftime("%H:%M:%S")
-print("Start Time =", start_time)
-for i in range(1,max_range+1):
-    print("On set {}".format(i))
-    z0= flow.double().sample(sample_size).cpu().detach().numpy()
-    zs.append(z0)
-    now = datetime.now()
-    elapsedTime = (now - start )
-    print("Current time is {}".format(now.strftime("%H:%M:%S")))
-    print("Elapsed time is {}".format(elapsedTime))
-    print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(max_range+1-i)))
-
+#Initialize dataXZ object for quantile inverse transform
 xz = dataXZ.dataXZ()
 QuantTran = xz.qt
 
-X = np.concatenate(zs)
-z = QuantTran.inverse_transform(X)
+for loop_num in range(maxloops):
+    try:
+        zs = []
+        start = datetime.now()
+        start_time = start.strftime("%H:%M:%S")
+        print("Start Time =", start_time)
+        for i in range(1,max_range+1):
+            print("On set {}".format(i))
+            z0= flow.double().sample(sample_size).cpu().detach().numpy()
+            zs.append(z0)
+            now = datetime.now()
+            elapsedTime = (now - start )
+            print("Current time is {}".format(now.strftime("%H:%M:%S")))
+            print("Elapsed time is {}".format(elapsedTime))
+            print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(max_range+1-i)))
 
-df = pd.DataFrame(z)
-df.to_pickle("gendata/GenData_{}_{}_{}_{}_{}.pkl".format(num_features,
-          num_layers,num_hidden_features,training_sample_size,training_loss))
+        X = np.concatenate(zs)
+        z = QuantTran.inverse_transform(X)
+
+        df = pd.DataFrame(z)
+        df.to_pickle("gendata/16features/GenData_{}_{}_{}_{}_{}_set_1{}.pkl".format(num_features,
+                num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
+    except Exception as e:
+        print("sorry, that didn't work, exception was:")
+        print(e)
 
 
 x_data = df[1]
