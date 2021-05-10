@@ -62,7 +62,7 @@ def plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
         plt.show()
 
 def plot_1dhist(x_data,vars,ranges="none",second_x="none",
-            saveplot=False,pics_dir="none",plot_title="none",first_color="blue",sci_on=False):
+            saveplot=False,pics_dir="none",plot_title="none",first_color="blue",sci_on=False,density=False):
     
     plt.rcParams["font.family"] = "Times New Roman"
     plt.rcParams["font.size"] = "20"
@@ -88,10 +88,10 @@ def plot_1dhist(x_data,vars,ranges="none",second_x="none",
     ax.set_ylabel('counts')  
     
     
-    plt.hist(x_data, bins =x_bins, density = False,range=[xmin,xmax], color=first_color, label='Raw Counts')# cmap = plt.cm.nipy_spectral) 
+    plt.hist(x_data, bins =x_bins, density = density,range=[xmin,xmax], color=first_color, label='Raw Counts')# cmap = plt.cm.nipy_spectral) 
     if second_x is not "none":
         print("printing second histo")
-        plt.hist(second_x, density = True, bins =x_bins, range=[xmin,xmax],color='red', alpha = 0.5, label='With Acceptance Corr.')# cmap = plt.cm.nipy_spectral) 
+        plt.hist(second_x, density = density, bins =x_bins, range=[xmin,xmax],color='red', alpha = 0.5, label='With Acceptance Corr.')# cmap = plt.cm.nipy_spectral) 
 
 
     #plt.tight_layout()  
@@ -118,7 +118,16 @@ def plot_1dhist(x_data,vars,ranges="none",second_x="none",
     else:
         plt.show()
 
-
+def plot_several_histo_1D(real_vals, gen_vals, label_real="Physics Data", label_gen="NFlow Model", col2 = "blue",title="Physics vs NFlow Models", saveloc=None):
+    fig, axes = plt.subplots(1, num_features, figsize=(4*5, 5))
+    for INDEX, ax in zip((0, 1, 2,3 ), axes):
+        _, bins, _ = ax.hist(real_vals[:, INDEX], bins=100, color = "red", label=label_real, density=True)
+        ax.hist(gen_vals[:, INDEX], bins=bins, label=label_gen, color = col2,alpha=0.5, density=True)
+        ax.legend(loc="lower left")
+        ax.set_title("Feature {}".format(INDEX) )
+    plt.tight_layout()
+    if saveloc is not None: plt.savefig(saveloc)
+    # plt.show()
 
 if __name__ == "__main__":
     ranges = [0,1,100,0,300,120]

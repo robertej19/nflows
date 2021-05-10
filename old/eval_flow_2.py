@@ -60,6 +60,7 @@ flow = Flow(transform, base_dist).to(device)
 flow.load_state_dict(torch.load("models/trainedmodel_799_100_-15.19.pkl"))
 #flow.load_state_dict(torch.load("trainedmodel_99_100_-2.76.pkl"))
 #flow.double().eval()
+flow.eval()
 
 zs = []
 
@@ -67,7 +68,7 @@ start = datetime.now()
 start_time = start.strftime("%H:%M:%S")
 print("Start Time =", start_time)
 
-max_range = 10
+max_range = 20
 sample_size = 200
 for i in range(1,max_range+1):
     print("On set {}".format(i))
@@ -75,6 +76,7 @@ for i in range(1,max_range+1):
     zs.append(z0)
     now = datetime.now()
     elapsedTime = (now - start )
+    print("Current time is {}".format(now.strftime("%H:%M:%S")))
     print("Elapsed time is {}".format(elapsedTime))
     print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(max_range+1-i)))
 
@@ -84,7 +86,7 @@ zX = np.concatenate(zs)
 #sys.exit()
 
 dfz = pd.DataFrame(zX)
-dfz.to_pickle("GenData.pkl")
+dfz.to_pickle("gendata/GenDataDouble.pkl")
 #print(dfz)
 
 print('gen z final done')
