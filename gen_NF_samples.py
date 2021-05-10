@@ -29,8 +29,8 @@ from nflows.transforms.permutations import ReversePermutation
 
 
 
-#dev = "cuda:0" if torch.cuda.is_available() else "cpu"
-dev = "cpu"
+dev = "cuda:0" if torch.cuda.is_available() else "cpu"
+#dev = "cpu"
 print(dev)
 device = torch.device(dev)
 
@@ -38,14 +38,17 @@ device = torch.device(dev)
 model_path = "models/"
 #model_name = "TM_16_18_20_100_799_-15.19.pt" #For initial double precision studies
 #model_name = "TM_4_6_4_100_3199_-0.88.pt" #4 features with QD
+
 model_name = "TM_16_16_32_400_4399_-14.42.pt" #16 feature with QD
+feature_subset = "all" #All 16 features
+
+#model_name = "TM-Final_4_6_80_400_-1.97.pt" #4 feature (electron) train, done 5/10 at 4 PM
+#feature_subset = [0,1,2,3] #Just electron features
 
 
 #This mechanism needs to be adjusted. It is hard coded. 
 # A mechanism to read the feature subset from the trained model should be implemented
-#feature_subset = [0,1,2,3] #Just electron features
 #feature_subset = [4,5,6,7] #Just proton features
-feature_subset = "all" #All 16 features
 
 
 params = model_name.split("_")
@@ -53,8 +56,15 @@ num_features = int(params[1])
 num_layers = int(params[2])
 num_hidden_features = int(params[3])
 training_sample_size = int(params[4])
-epoch_num = int(params[5])
-training_loss = float((params[6]).split(".p")[0])
+
+if "Final" in model_name:
+    epoch_num = 4444 #identify as final
+    training_loss = float((params[5]).split(".p")[0])
+else:
+    epoch_num = int(params[5])
+    training_loss = float((params[6]).split(".p")[0])
+
+
 print(num_features,num_layers,num_hidden_features,training_sample_size,training_loss)
 
 flow, optimizer = make_model(num_layers,num_features,num_hidden_features,device)
@@ -91,7 +101,7 @@ for loop_num in range(maxloops):
         z = QuantTran.inverse_transform(X)
 
         df = pd.DataFrame(z)
-        df.to_pickle("gendata/16features/GenData_{}_{}_{}_{}_{}_set_2{}.pkl".format(num_features,
+        df.to_pickle("gendata/16features/GenData_{}_{}_{}_{}_{}_set_4{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")

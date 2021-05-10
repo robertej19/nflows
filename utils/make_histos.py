@@ -6,7 +6,8 @@ import os, subprocess
 import math
 import shutil
 from icecream import ic
-
+from matplotlib.patches import Rectangle
+import pandas as pd
 
 def plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
             saveplot=False,pics_dir="none",plot_title="none",
@@ -57,16 +58,13 @@ def plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
         plt.savefig(pics_dir + new_plot_title+".png")
         plt.close()
         print("Figure {} saved to {}".format(new_plot_title,pics_dir))
-
     else:
         plt.show()
 
-def plot_1dhist(x_data,vars,ranges="none",second_x="none",
-            saveplot=False,pics_dir="none",plot_title="none",first_color="blue",sci_on=False,density=False):
+def plot_1dhist(x_data,vars,ranges="none",second_x=None,
+            saveplot=False,pics_dir="none",plot_title="none",first_color="blue",sci_on=False,
+            density=False,annotation=None,xlabel_1="first dataset",xlabel_2="second dataste"):
     
-    plt.rcParams["font.family"] = "Times New Roman"
-    plt.rcParams["font.size"] = "20"
-
     # Initalize parameters
     x_name = vars[0]
 
@@ -81,18 +79,49 @@ def plot_1dhist(x_data,vars,ranges="none",second_x="none",
 
     x_bins = np.linspace(xmin, xmax, num_xbins) 
 
-    # Creating plot
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.size"] = "20"
+
     fig, ax = plt.subplots(figsize =(10, 7)) 
+
+
+    y, x = np.histogram(x_data, bins=x_bins)
+    x = [(a+x[i+1])/2.0 for i,a in enumerate(x[0:-1])]
+    hist = pd.Series(y, x)
+
+    # Plot previously histogrammed data
+    #ax = pdf.plot(lw=2, label='PDF', legend=True)
+    w = abs(hist.index[1]) - abs(hist.index[0])
+    bar_0_10 = ax.bar(hist.index, hist.values, width=w,  align='center',color='red', alpha = 1)
+    #ax.legend(['PDF', 'Random Samples'])
+
+
+    if second_x is not None:
+        y, x = np.histogram(second_x, bins=x_bins)
+        x = [(a+x[i+1])/2.0 for i,a in enumerate(x[0:-1])]
+        hist = pd.Series(y, x)
+
+        # Plot previously histogrammed data
+        #ax = pdf.plot(lw=2, label='PDF', legend=True)
+        w = abs(hist.index[1]) - abs(hist.index[0])
+        bar_10_100 = ax.bar(hist.index, hist.values, width=w,  align='center',color='blue', alpha = 0.5)
+        #bar_0_10 = ax.bar(np.arange(0,10), np.arange(1,11), color="k")
+        #bar_0_10 = ax.hist(range=[xmin,xmax], color=first_color, label=xlabel_1)# cmap = plt.cm.nipy_spectral) 
+
+        # create blank rectangle
+        extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none', linewidth=0)
+        ax.legend([bar_0_10, bar_10_100,extra], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"EMD Value: {:.4f}".format(annotation)))  
+
+
+
+    # Creating plot
         
     ax.set_xlabel(x_name)  
     ax.set_ylabel('counts')  
-    
-    
-    plt.hist(x_data, bins =x_bins, density = density,range=[xmin,xmax], color=first_color, label='Raw Counts')# cmap = plt.cm.nipy_spectral) 
-    if second_x is not "none":
-        print("printing second histo")
-        plt.hist(second_x, density = density, bins =x_bins, range=[xmin,xmax],color='red', alpha = 0.5, label='With Acceptance Corr.')# cmap = plt.cm.nipy_spectral) 
 
+    
+    #bar0 = ax.plot([], [], ' ', label="EMD Value: {:.2f}".format(annotation))
+    
 
     #plt.tight_layout()  
 
@@ -105,7 +134,6 @@ def plot_1dhist(x_data,vars,ranges="none",second_x="none",
     
     if sci_on:
         plt.ticklabel_format(axis="x",style="sci",scilimits=(0,0))
-
 
     if saveplot:
         new_plot_title = plot_title.replace("/","").replace(" ","_").replace("$","").replace("^","").replace("\\","").replace(".","").replace("<","").replace(">","")

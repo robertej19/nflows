@@ -42,8 +42,8 @@ feature_subset = [0,1,2,3] #Just electron features
 #feature_subset = "all" #All 16 features
 
 #These are parameters for the Normalized Flow model
-num_layers = 6
-num_hidden_features = 80
+num_layers = 12
+num_hidden_features = 100
 
 #These are training parameters
 num_epoch = 10000

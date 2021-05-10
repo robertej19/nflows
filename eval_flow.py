@@ -12,7 +12,7 @@ import os
 import sys
 import pandas as pd
 from matplotlib import interactive
-
+from matplotlib.patches import Rectangle
 
 from utils import make_histos
 from utils.utilities import meter
@@ -28,10 +28,12 @@ from nflows.transforms.autoregressive import MaskedAffineAutoregressiveTransform
 from nflows.transforms.permutations import ReversePermutation
 
 
-data_path = "gendata/16features/"
-run_1 = False
+#data_path = "gendata/4features/" #Just electorn features
+data_path = "gendata/16features/" #All 16 features
+
+physics_cuts = False
 gen_all_emd = False
-run_3 = True
+gen_1d_histos = True
 
 dfs = []
     
@@ -47,67 +49,73 @@ print("The Generated dataset has {} events".format(nflow_data_len))
 df_test_data_all = pd.read_pickle("data/pi0_cartesian_test.pkl")
 df_test_data = df_test_data_all.sample(n=nflow_data_len)
 
-if run_1:
+if physics_cuts:
     df = df_nflow_data
     e = 0
     df['emass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
 
-    e = 4
-    df['pmass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
+    # e = 4
+    # df['pmass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
 
-    e = 8
-    df['g1mass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
+    # e = 8
+    # df['g1mass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
 
-    e = 12
-    df['g2mass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
+    # e = 12
+    # df['g2mass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
 
-    e = 0
-    df['protonE'] = df[4]
-    df['Etot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    e = 1
-    df['pxtot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    e = 2
-    df['pytot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    e = 3
-    df['pztot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    df['NetE'] = np.sqrt(df['Etot']**2 - df['pxtot']**2 - df['pytot']**2 - df['pztot']**2)
+    # e = 0
+    # df['protonE'] = df[4]
+    # df['Etot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    # e = 1
+    # df['pxtot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    # e = 2
+    # df['pytot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    # e = 3
+    # df['pztot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    # df['NetE'] = np.sqrt(df['Etot']**2 - df['pxtot']**2 - df['pytot']**2 - df['pztot']**2)
 
-    epsilon = 0.05
+    epsilon = 0.005
+    df2 = df.query("emass2>(0-{}) and emass2<(0+{})".format(epsilon,epsilon))
     #df2 = df.query("NetE>(4.556-{}) and NetE<(4.556+{})".format(epsilon,epsilon))
-    df2 = df.query("protonE<1.475")#.format(epsilon,epsilon))
+    #df2 = df.query("protonE<1.475")#.format(epsilon,epsilon))
     print(df)
     print(df2)
     #sys.exit()
 
     bin_size = [100,100]
-    xvals = df2[4]
+    xvals = df["emass2"]
     x_name = "px E"
     output_dir = "./"
     #ranges = "none"
-    ranges = [1.4,1.6,30]
+    ranges = [-0.2,0.2,100]
 
-    make_histos.plot_1dhist(xvals,[x_name,],ranges=ranges,second_x="none",
-                    saveplot=False,pics_dir=output_dir,plot_title=x_name,density=False)
+    make_histos.plot_1dhist(xvals,[x_name,],ranges=ranges,second_x=None,
+                    saveplot=False,pics_dir=output_dir,plot_title="Squared Electron Mass, NF Model",density=False)
+    
+    
+
     x_data = df[1]
     y_data = df[2]
     var_names = ["E Px","E Py"]
     saveplots = False
     output_dir = "."
-    title = "Px vs Py"
+    title = "Electron X vs. Y Mom., NF Model"
     filename = title
     units = ["GeV","Gev"]
-    ranges = [[-2,2,100],[-2,2,100]]
+    ranges = [[-1.5,1.5,100],[-1.5,1.5,100]]
 
     interactive(True)
     make_histos.plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
                                 saveplot=saveplots,pics_dir=output_dir,plot_title=title.replace("/",""),
-                                filename=filename,units=units)
+                                filename=filename.replace(" ",""),units=units)
 
     x_data = df2[1]
     y_data = df2[2]
+    title = "Electron X vs. Y Mom., NF Model, $M_e^2$ Cut"
+
     make_histos.plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
                             saveplot=saveplots,pics_dir=output_dir,plot_title=title.replace("/",""),
-                            filename=filename,units=units)
+                            filename=filename.replace(" ",""),units=units)
     interactive(False)
     plt.show()
 
@@ -164,7 +172,7 @@ if gen_all_emd:
     plt.savefig(plotname)
     plt.close()
 
-if run_3:
+if gen_1d_histos:
     output_dir = "hists_1D/"
 
     import itertools
@@ -176,41 +184,59 @@ if run_3:
     names = [r for r in itertools.product(a, b)]#: print r[0] + r[1]
 
 
+    #Uncomment for plotting all 1D histograms
+    # for feature_ind in range(16):
+    #         name = names[feature_ind]
+    #         x_name = "{} {}".format(name[0],name[1])
+    #         print("Creating 1 D Histogram for: {} ".format(name))
+    #         emd_nflow, _, _ = meter(df_test_data.to_numpy(),df_nflow_data.to_numpy(),feature_ind)
+    #         xvals_1 = df_test_data[feature_ind]
+    #         xvals_2 = df_nflow_data[feature_ind]
+    #         make_histos.plot_1dhist(xvals_1,[x_name,],ranges="none",second_x=xvals_2,
+    #                 saveplot=True,pics_dir=output_dir,plot_title="{}, NF Model".format(x_name),density=True,
+    #                 annotation=emd_nflow,xlabel_1="Microphysics Data",xlabel_2="NF Model Sample")
 
-    for feature_ind in range(16):
-            name = names[feature_ind]
-            x_name = "{} {}".format(name[0],name[1])
-            print("Creating 1 D Histogram for: {} ".format(name))
-            emd_nflow, _, _ = meter(df_test_data.to_numpy(),df_nflow_data.to_numpy(),feature_ind)
-            xvals_1 = df_test_data[feature_ind]
-            xvals_2 = df_nflow_data[feature_ind]
-            make_histos.plot_1dhist(xvals_1,[x_name,],ranges="none",second_x=xvals_2,
-                    saveplot=False,pics_dir=output_dir,plot_title=x_name,density=True,annotation=emd_nflow)
+
+    output_dir = "hists_2D/"
+    #saveplots = False
+    saveplots = True
+
+    #interactive(True)
 
 
-    x_data = df_test_data[5]
-    y_data = df_test_data[6]
-    var_names = ["E Px","E Py"]
-    saveplots = False
-    outdir = "."
-    title = "Px vs Py"
+    # # #electron x mom, proton x mom
+    x,y = 6,11
+    var_names = ["Proton Y-Momentum","Photon 1 Z-Momentum"]
+    title = "Proton $P_X$ vs. Photon 1 $P_Z$"
+    ranges = [[-.75,.75,100],[1,9,100]]
+
+    #electron x mom, proton x mom
+    # x,y = 1,5 
+    # var_names = ["Electron X-Momentum","Proton X-Momentum"]
+    # title = "Electon $P_X$ vs. Proton $P_X$"
+    # ranges = [[-1.5,1.5,100],[-.75,.75,100]]
+
+
+
+
+    title_phys = title+ ", Physics Data"
+    title_nf = title + ", NF Model"
     filename = title
     units = ["GeV","Gev"]
-    #ranges = [[-2,2,100],[-2,2,100]]
-    ranges = [[-1,1,100],[-1,1,100]]
+    x_data = df_test_data[x]
+    y_data = df_test_data[y]
+    x_data_nf = df_nflow_data[x]
+    y_data_nf = df_nflow_data[y]
 
-    interactive(True)
-    make_histos.plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
-                                saveplot=saveplots,pics_dir=output_dir,plot_title=title.replace("/",""),
+    make_histos.plot_2dhist(x_data,y_data,var_names,ranges,colorbar=False,
+                                saveplot=saveplots,pics_dir=output_dir,plot_title=title_phys.replace("/",""),
+                                filename=filename,units=units)
+
+    
+    make_histos.plot_2dhist(x_data_nf,y_data_nf,var_names,ranges,colorbar=False,
+                                saveplot=saveplots,pics_dir=output_dir,plot_title=title_nf.replace("/",""),
                                 filename=filename,units=units)
 
 
-    x_data = df_test_data[5]
-    y_data = df_test_data[6]
-    make_histos.plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
-                                saveplot=saveplots,pics_dir=output_dir,plot_title=title.replace("/",""),
-                                filename=filename,units=units)
-
-
-    interactive(False)
-    plt.show()
+    #interactive(False)
+    #plt.show()
