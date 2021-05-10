@@ -29,8 +29,8 @@ from nflows.transforms.permutations import ReversePermutation
 
 
 
-dev = "cuda:0" if torch.cuda.is_available() else "cpu"
-#dev = "cpu"
+#dev = "cuda:0" if torch.cuda.is_available() else "cpu"
+dev = "cpu"
 print(dev)
 device = torch.device(dev)
 
@@ -39,6 +39,13 @@ model_path = "models/"
 #model_name = "TM_16_18_20_100_799_-15.19.pt" #For initial double precision studies
 #model_name = "TM_4_6_4_100_3199_-0.88.pt" #4 features with QD
 model_name = "TM_16_16_32_400_4399_-14.42.pt" #16 feature with QD
+
+
+#This mechanism needs to be adjusted. It is hard coded. 
+# A mechanism to read the feature subset from the trained model should be implemented
+#feature_subset = [0,1,2,3] #Just electron features
+#feature_subset = [4,5,6,7] #Just proton features
+feature_subset = "all" #All 16 features
 
 
 params = model_name.split("_")
@@ -61,7 +68,7 @@ sample_size = 200 #Number of samples per set
 
 
 #Initialize dataXZ object for quantile inverse transform
-xz = dataXZ.dataXZ()
+xz = dataXZ.dataXZ(feature_subset=feature_subset)
 QuantTran = xz.qt
 
 for loop_num in range(maxloops):
@@ -84,7 +91,7 @@ for loop_num in range(maxloops):
         z = QuantTran.inverse_transform(X)
 
         df = pd.DataFrame(z)
-        df.to_pickle("gendata/16features/GenData_{}_{}_{}_{}_{}_set_1{}.pkl".format(num_features,
+        df.to_pickle("gendata/16features/GenData_{}_{}_{}_{}_{}_set_2{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")
