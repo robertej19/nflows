@@ -69,7 +69,10 @@ class MaskedLinear(nn.Linear):
         return mask, out_degrees
 
     def forward(self, x):
-        return F.linear(x.double(), self.weight * self.mask, self.bias)
+        #Uncomment the below if using float64 
+        #return F.linear(x.double(), self.weight * self.mask, self.bias)
+        return F.linear(x, self.weight * self.mask, self.bias)
+
 
 
 class MaskedFeedforwardBlock(nn.Module):

@@ -32,7 +32,11 @@ def make_model(num_layers,num_features,num_hidden_features,device):
         transforms.append(MaskedUMNNAutoregressiveTransform(features=num_features, 
                                                             hidden_features=num_hidden_features)) 
     transform = CompositeTransform(transforms)
-    flow = Flow(transform, base_dist).double().to(device)
+    
+    #Uncomment the below if float64
+    #flow = Flow(transform, base_dist).double().to(device)
+    flow = Flow(transform, base_dist).to(device)
+    
     optimizer = optim.Adam(flow.parameters())
 
     return (flow,optimizer)
