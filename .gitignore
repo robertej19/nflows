@@ -4,6 +4,7 @@
 *.pdf
 *.jpg
 *.dat
+*.pt
 
 # Development files and python cache
 /*.pyc
