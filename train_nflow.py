@@ -42,8 +42,8 @@ feature_subset = [0,1,2,3] #Just electron features
 #feature_subset = "all" #All 16 features
 
 #These are parameters for the Normalized Flow model
-num_layers = 12
-num_hidden_features = 100
+num_layers = 18
+num_hidden_features = 4
 
 #These are training parameters
 num_epoch = 10000
@@ -89,7 +89,7 @@ for i in range(num_epoch):
         torch.save(flow.state_dict(), "models/TM_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,i,loss.item()))
 
-tm_name = "models/TM-Final_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
+tm_name = "models/4features/TM-Final_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,losses[-1])
 torch.save(flow.state_dict(), tm_name)
 print("trained model saved to {}".format(tm_name))

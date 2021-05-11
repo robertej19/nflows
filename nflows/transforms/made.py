@@ -70,8 +70,9 @@ class MaskedLinear(nn.Linear):
 
     def forward(self, x):
         #Uncomment the below if using float64 
-        #return F.linear(x.double(), self.weight * self.mask, self.bias)
-        return F.linear(x, self.weight * self.mask, self.bias)
+        return F.linear(x.double(), self.weight * self.mask, self.bias)
+        #Uncomment the below if using float32
+        #return F.linear(x, self.weight * self.mask, self.bias)
 
 
 

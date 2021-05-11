@@ -43,7 +43,7 @@ class dataXZ:
         #xz = np.array(pickle.load(f), dtype=np.float64)
         #x = cartesian_converter(xz)
 
-        x = np.array(pickle.load(f), dtype=np.float32)
+        x = np.array(pickle.load(f), dtype=np.float64)
         if feature_subset != "all": 
           x = x[:,feature_subset]
 

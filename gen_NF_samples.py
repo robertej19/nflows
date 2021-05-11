@@ -37,13 +37,13 @@ device = torch.device(dev)
 #reonstruct an nflow model
 model_path = "models/"
 #model_name = "TM_16_18_20_100_799_-15.19.pt" #For initial double precision studies
-#model_name = "TM_4_6_4_100_3199_-0.88.pt" #4 features with QD
+#model_name = "TM_4_6_4_100_3199_-0.88.pt" #4 features with QD, initial training
 
-model_name = "TM_16_16_32_400_4399_-14.42.pt" #16 feature with QD
-feature_subset = "all" #All 16 features
+#model_name = "TM_16_16_32_400_4399_-14.42.pt" #16 feature with QD
+#feature_subset = "all" #All 16 features
 
-#model_name = "TM-Final_4_6_80_400_-1.97.pt" #4 feature (electron) train, done 5/10 at 4 PM
-#feature_subset = [0,1,2,3] #Just electron features
+model_name = "TM-Final_4_6_80_400_-1.97.pt" #4 feature (electron) train, done 5/10 at 4 PM
+feature_subset = [0,1,2,3] #Just electron features
 
 
 #This mechanism needs to be adjusted. It is hard coded. 
@@ -74,7 +74,7 @@ flow.eval()
 
 maxloops = 200 #Number of overall loops
 max_range = 10#Number of sets per loop
-sample_size = 200 #Number of samples per set
+sample_size = 2000 #Number of samples per set
 
 
 #Initialize dataXZ object for quantile inverse transform
@@ -101,7 +101,7 @@ for loop_num in range(maxloops):
         z = QuantTran.inverse_transform(X)
 
         df = pd.DataFrame(z)
-        df.to_pickle("gendata/16features/GenData_{}_{}_{}_{}_{}_set_4{}.pkl".format(num_features,
+        df.to_pickle("gendata/4features/GenData_{}_{}_{}_{}_{}_set_6{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")
