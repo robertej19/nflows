@@ -16,7 +16,7 @@ from matplotlib.patches import Rectangle
 
 from utils import make_histos
 from utils.utilities import meter
-
+from utils.utilities import cartesian_converter
 
 sys.path.insert(0,'/mnt/c/Users/rober/Dropbox/Bobby/Linux/classes/GAML/GAMLX/nflows/nflows')
 from nflows.transforms.autoregressive import MaskedUMNNAutoregressiveTransform
@@ -28,24 +28,14 @@ from nflows.transforms.autoregressive import MaskedAffineAutoregressiveTransform
 from nflows.transforms.permutations import ReversePermutation
 
 
-data_path = "gendata/4features/" #Just electorn features
-data_path_16 = "gendata/16features/" #All 16 features
+#data_path = "gendata/4features/" #Just electorn features
+#data_path_16 = "gendata/16features/" #All 16 features
+data_path = "gendata/Cond/16features/"
 
 
-dfs16 = []
-    
-filenames16 = os.listdir(data_path_16)
-
-for f in filenames16:
-    df0 = pd.read_pickle(data_path_16+f)
-    dfs16.append(df0)
-
-df_nflow_data_16 = pd.concat(dfs16)
-
-
-physics_cuts = True
+physics_cuts = False
 gen_all_emd = False
-gen_1d_histos = False
+gen_1d_histos = True
 gen_emd_comp = False
 
 dfs = []
@@ -59,15 +49,23 @@ for f in filenames:
 df_nflow_data = pd.concat(dfs)
 nflow_data_len = len(df_nflow_data.index)
 print("The Generated dataset has {} events".format(nflow_data_len))
-df_test_data_all = pd.read_pickle("data/pi0_cartesian_test.pkl")
+
+
+with open('data/pi0.pkl', 'rb') as f:
+    xz = np.array(pickle.load(f), dtype=np.float32)
+    x = cartesian_converter(xz,type='x')
+    z = cartesian_converter(xz,type='z')
+        
+
+df_test_data_all = pd.DataFrame(x)
 
 df_test_data = df_test_data_all
 #df_test_data = df_test_data_all.sample(n=nflow_data_len)
 
-# if len(df_nflow_data) > len(df_test_data):
-#     df_nflow_data = df_nflow_data.sample(n=len(df_test_data))
-# else:
-#     df_test_data = df_test_data.sample(n=len(df_nflow_data))
+if len(df_nflow_data) > len(df_test_data):
+    df_nflow_data = df_nflow_data.sample(n=len(df_test_data))
+else:
+    df_test_data = df_test_data.sample(n=len(df_nflow_data))
 
 if physics_cuts:
     df = df_nflow_data_16
@@ -123,7 +121,7 @@ if physics_cuts:
 
 
 
-##################################
+    ##################################
 
     dvpi0p = df_nflow_data_16
     #dvpi0p = df_test_data
@@ -155,7 +153,7 @@ if physics_cuts:
     
     dvpi0p16 = dvpi0p
 
-#################################
+    #################################
 
 
 
@@ -304,11 +302,6 @@ if gen_all_emd:
 
 
 
-
-
-
-
-
 if gen_emd_comp:
 
     #df_nflow_data = df_nflow_data.sample(n=len(df_nflow_data_16))
@@ -382,12 +375,6 @@ if gen_emd_comp:
 
 
 
-
-
-
-
-
-
 if gen_1d_histos:
     output_dir = "hists_1D/"
 
@@ -412,7 +399,7 @@ if gen_1d_histos:
         df_test_data = df_test_data.sample(n=len(df_nflow_data))
 
 
-    # # Uncomment for plotting all 1D histograms
+    # Uncomment for plotting all 1D histograms
     # for feature_ind in range(4):
     #         name = names[feature_ind]
     #         x_name = "{} {}".format(name[0],name[1])
@@ -445,10 +432,10 @@ if gen_1d_histos:
     # ranges = [[-1.5,1.5,100],[-.75,.75,100]]
 
     #electron x mom, electron y mom
-    # x,y = 1,2
-    # var_names = ["Electron X-Momentum","Electron Y-Momentum"]
-    # title = "Electon $P_X$ vs. Electron $P_Y$"
-    # ranges = [[-1.5,1.5,100],[-1.5,1.5,100]]
+    x,y = 1,2
+    var_names = ["Electron X-Momentum","Electron Y-Momentum"]
+    title = "Electon $P_X$ vs. Electron $P_Y$"
+    ranges = [[-1.5,1.5,100],[-1.5,1.5,100]]
 
     # #electron x mom, electron y mom
     # x,y = 1,2
@@ -464,10 +451,10 @@ if gen_1d_histos:
 
 
     #electron mass squared, electron energy
-    x,y = 'emass2',1
-    var_names = ["Electron Mass Squared","Electron Z Mom."]
-    title = "Electon Mass Squared vs. Electron Z Mom."
-    ranges = [[-1.5,1.5,100],[-1.5,1.5,100]]
+    # x,y = 'emass2',1
+    # var_names = ["Electron Mass Squared","Electron Z Mom."]
+    # title = "Electon Mass Squared vs. Electron Z Mom."
+    # ranges = [[-1.5,1.5,100],[-1.5,1.5,100]]
 
 
     title_phys = title+ ", Physics Data"
