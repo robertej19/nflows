@@ -44,8 +44,8 @@ print(dev)
 feature_subset = "all" #All 16 features
 
 #These are parameters for the Normalized Flow model
-num_layers = 18
-num_hidden_features = 4
+num_layers = 6
+num_hidden_features = 80
 
 #These are training parameters
 num_epoch = 10000
@@ -91,10 +91,10 @@ for i in range(num_epoch):
       print("Rate is {} seconds per epoch".format(elapsedTime/i))
       print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(num_epoch+1-i)))
       if ((i+1)%100) == 0:
-        torch.save(flow.state_dict(), "models/Cond/16features/TM_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
+        torch.save(flow.state_dict(), "models/Cond/16features/TM-UMNN_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,i,loss.item()))
 
-tm_name = "models/Cond/16features/TM-Final_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
+tm_name = "models/Cond/16features/TM-Final-UMNN_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,losses[-1])
 torch.save(flow.state_dict(), tm_name)
 print("trained model saved to {}".format(tm_name))

@@ -37,7 +37,10 @@ device = torch.device(dev)
 #reonstruct an nflow model
 #model_path = "models/"
 model_path = "models/Cond/16features/"
-model_name = "TM_16_18_4_400_299_-12.37.pt" #16 feature with Cond
+#model_name = "TM_16_18_4_400_299_-12.37.pt" #16 feature with Cond
+#model_name = "TM_16_6_80_400_799_-26.48.pt" #16 feature with Cond
+#model_name = "TMUMNN_16_6_80_400_499_-28.70.pt"
+model_name = "TM-UMNN_16_6_80_400_3999_-42.91.pt"
 feature_subset = "all" #All 16 features
 
 
@@ -77,9 +80,9 @@ print("number of params: ", sum(p.numel() for p in flow.parameters()))
 flow.load_state_dict(torch.load(model_path+model_name))
 flow.eval()
 
-maxloops = 50 #Number of overall loops
-max_range = 20#Number of sets per loop
-sample_size = 2000 #Number of samples per set
+maxloops = 500 #Number of overall loops
+max_range = 10#Number of sets per loop
+sample_size = 200 #Number of samples per set
 
 
 #Initialize dataXZ object for quantile inverse transform
@@ -119,7 +122,7 @@ for loop_num in range(maxloops):
         #z = QuantTran.inverse_transform(X)
 
         df = pd.DataFrame(X)
-        df.to_pickle("gendata/Cond/16features/GenData_{}_{}_{}_{}_{}_set_2_{}.pkl".format(num_features,
+        df.to_pickle("gendata/Cond/16features/UMNN/GenData_UMNN_{}_{}_{}_{}_{}_set_2_{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")

@@ -46,14 +46,14 @@ def make_model(num_layers,num_features,num_hidden_features,device):
         #                                                    hidden_features=num_hidden_features)) 
 
         #Conditional MAA
-        transforms.append(MaskedAffineAutoregressiveTransform(features=num_features, 
-                                                         hidden_features=num_hidden_features,
-                                                          context_features=num_features))
+        #transforms.append(MaskedAffineAutoregressiveTransform(features=num_features, 
+        #                                                 hidden_features=num_hidden_features,
+        #                                                  context_features=num_features))
         
         #Conditional UMNN
-        #transforms.append(MaskedUMNNAutoregressiveTransform(features=num_features, 
-        #                                                      hidden_features=num_hidden_features,
-        #                                                      context_features=num_features))
+        transforms.append(MaskedUMNNAutoregressiveTransform(features=num_features, 
+                                                              hidden_features=num_hidden_features,
+                                                              context_features=num_features))
     transform = CompositeTransform(transforms)
     
     #Uncomment the below if float64
