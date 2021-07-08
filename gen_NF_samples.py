@@ -31,14 +31,16 @@ from nflows.transforms.permutations import ReversePermutation
 #reonstruct an nflow model
 #model_path = "models/"
 #model_path = "models/Cond/16features/"
-#model_path = "models/Cond/proton/"
 #model_name = "TM_16_18_4_400_299_-12.37.pt" #16 feature with Cond
 #model_name = "TM_16_6_80_400_799_-26.48.pt" #16 feature with Cond
 #model_name = "TMUMNN_16_6_80_400_499_-28.70.pt"
 #model_name = "TM-UMNN_16_6_80_400_3999_-42.91.pt"
-#model_name = "TM-UMNN_4_10_10_800_2599_-13.20.pt"
 #feature_subset = "all" #All 16 features
-#feature_subset = [4,5,6,7] #Just proton features
+
+#Proton:
+model_path = "models/Cond/proton/"
+model_name = "TM-UMNN_4_10_10_800_2599_-13.20.pt"
+feature_subset = [4,5,6,7] #Just proton features
 
 
 # #Photon 1:
@@ -47,9 +49,9 @@ from nflows.transforms.permutations import ReversePermutation
 # feature_subset = [8,9,10,11] #Just photon1 features
 
 #Photon 2:
-model_path = "models/Cond/photon2/"
-model_name = "TM-UMNN_4_10_10_800_799_-10.20.pt"
-feature_subset = [12,13,14,15] #Just photon2 features
+# model_path = "models/Cond/photon2/"
+# model_name = "TM-UMNN_4_10_10_800_799_-10.20.pt"
+# feature_subset = [12,13,14,15] #Just photon2 features
 
 
 
@@ -159,7 +161,7 @@ for loop_num in range(maxloops):
         #z = QuantTran.inverse_transform(X)
         df = pd.concat(data,axis=1)
         print(df)
-        df.to_pickle("gendata/Relational/photon2_1M/GenData_UMNN_{}_{}_{}_{}_{}_{}.pkl".format(num_features,
+        df.to_pickle("gendata/Relational/proton_1M/GenData_UMNN_{}_{}_{}_{}_{}_{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")

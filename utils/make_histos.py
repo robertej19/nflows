@@ -63,7 +63,7 @@ def plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
 
 def plot_1dhist(x_data,vars,ranges="none",second_x=None,
             saveplot=False,pics_dir="none",plot_title="none",first_color="blue",sci_on=False,
-            density=False,annotation=None,xlabel_1="first dataset",xlabel_2="second dataste",
+            density=False,annotation="yes",xlabel_1="first dataset",xlabel_2="second dataste",
             proton_line=False):
     
     # Initalize parameters
@@ -96,10 +96,10 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
     # Plot previously histogrammed data
     #ax = pdf.plot(lw=2, label='PDF', legend=True)
     w = abs(hist.index[1]) - abs(hist.index[0])
-    bar_0_10 = ax.bar(hist.index, hist.values, width=w,  align='center',color=first_color, alpha = 1,label=xlabel_1)
+    bar_0_10 = ax.bar(hist.index, hist.values, width=w,  align='center',color=first_color, alpha = .5,label=xlabel_1)
     #ax.legend(['PDF', 'Random Samples'])
 
-
+    print(annotation)
     if second_x is not None:
         y, x = np.histogram(second_x, bins=x_bins)
         x = [(a+x[i+1])/2.0 for i,a in enumerate(x[0:-1])]
@@ -113,15 +113,17 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
         #bar_0_10 = ax.hist(range=[xmin,xmax], color=first_color, label=xlabel_1)# cmap = plt.cm.nipy_spectral) 
 
         # create blank rectangle
-        if annotation is not None:
+        if annotation:
+            print("ANNI IS NOT NONE")
             extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none', linewidth=0)
-            ax.legend([bar_0_10, bar_10_100,extra], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"EMD Value: {:.4f}".format(annotation)))  
+            #ax.legend([bar_0_10, bar_10_100,extra], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"EMD Value: {:.4f}".format(annotation)))  
+            ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))  
         else:
              ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))  
 
     if proton_line:
-        plt.axvline(x=proton_line,color = 'r', linestyle = '-',label="Proton Mass",linewidth=3.5)
-        ax.legend(loc="best")
+        plt.axvline(x=proton_line,color = 'k', linestyle = '-',label="Pion Mass",linewidth=3.5)
+        #ax.legend(loc="best")
     # Creating plot
         
     ax.set_xlabel(x_name)  

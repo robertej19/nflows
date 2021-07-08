@@ -33,7 +33,7 @@ from icecream import ic
 #data_path = "gendata/16features/" #All 16 features
 #data_path = "gendata/Cond/16features/maaf/"
 #data_path = "gendata/Cond/16features/UMNN/"
-data_path = "gendata/Relational/photon1/"
+data_path = "gendata/Relational/photon1_1M/"
 
 dfs = []
     
@@ -49,7 +49,7 @@ df_photon1.columns = ["gen_E_1","gen_Px_1","gen_Py_1","gen_Pz_1","recon_E_1","re
 
 print("The Generated dataset has {} events".format(len(df_photon1)))
 
-data_path = "gendata/Relational/photon2/"
+data_path = "gendata/Relational/photon2_1M/"
 
 dfs = []
     
@@ -69,6 +69,11 @@ physics_cuts = False
 gen_all_emd = False
 gen_1d_histos = True
 gen_emd_comp = False
+
+if len(df_photon1) > len(df_photon2):
+    df_photon1 = df_photon1.head(len(df_photon2))
+else:
+    df_photon2 = df_photon2.head(len(df_photon1))
 
 
 df_ps = pd.concat([df_photon1,df_photon2],axis=1)
@@ -95,8 +100,17 @@ pi0 = [df_ps['recon_Px_1']+df_ps['recon_Px_2'],df_ps['recon_Py_1']+df_ps['recon_
 df_ps.loc[:,"recon_Mpi0"] = np.sqrt((mag(gam1)+mag(gam2))**2 - mag(pi0)**2)
 
 
-make_histos.plot_1dhist(df_ps['recon_Mpi0'],['nf pion mass',],ranges=[0.02,0.2,100],
-                            second_x=df_ps['nf_Mpi0'])
+gam1 = [df_ps['gen_Px_1'],df_ps['gen_Py_1'],df_ps['gen_Pz_1']]
+gam2 = [df_ps['gen_Px_2'],df_ps['gen_Py_2'],df_ps['gen_Pz_2']]
+pi0 = [df_ps['gen_Px_1']+df_ps['gen_Px_2'],df_ps['gen_Py_1']+df_ps['gen_Py_2'],df_ps['gen_Pz_1']+df_ps['gen_Pz_2']]
+df_ps.loc[:,"gen_Mpi0"] = np.sqrt((mag(gam1)+mag(gam2))**2 - mag(pi0)**2)
+
+ic(df_ps.mean())
+
+df_ps.to_pickle("4_feature_pion.pkl")
+
+make_histos.plot_1dhist(df_ps['recon_Mpi0'],['nf pion mass',],ranges=[0.02,0.4,150],
+                            second_x=df_ps['nf_Mpi0'],first_color='red')
 
 
  # #         make_histos.plot_1dhist(xvals_1,[x_name,],ranges="none",second_x=xvals_2,

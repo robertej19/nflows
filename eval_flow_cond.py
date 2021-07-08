@@ -27,17 +27,18 @@ from nflows.transforms.base import CompositeTransform
 from nflows.transforms.autoregressive import MaskedAffineAutoregressiveTransform
 from nflows.transforms.permutations import ReversePermutation
 
+from icecream import ic
 
 #data_path = "gendata/4features/" #Just electorn features
 #data_path = "gendata/16features/" #All 16 features
 #data_path = "gendata/Cond/16features/maaf/"
-#data_path = "gendata/Cond/16features/UMNN/"
-data_path = "gendata/Cond/proton/UMNN/"
+data_path = "gendata/Cond/16features/UMNN/"
+#data_path = "gendata/Cond/proton/UMNN/"
 
 
-physics_cuts = False
+physics_cuts = True
 gen_all_emd = False
-gen_1d_histos = True
+gen_1d_histos = False
 gen_emd_comp = False
 
 dfs = []
@@ -69,19 +70,85 @@ else:
     df_test_data = df_test_data.sample(n=len(df_nflow_data))
     df_test_data_z = df_test_data_z.sample(n=len(df_nflow_data))
 
-df_test_data = df_test_data.drop(columns=[0,1,2,3,8,9,10,11,12,13,14,15])
-df_test_data.columns = [0,1,2,3]
-df_test_data_z = df_test_data_z.drop(columns=[0,1,2,3,8,9,10,11,12,13,14,15])
-df_test_data_z.columns = [0,1,2,3]
-print(df_test_data)
+# df_test_data = df_test_data.drop(columns=[0,1,2,3,8,9,10,11,12,13,14,15])
+# df_test_data.columns = [0,1,2,3]
+# df_test_data_z = df_test_data_z.drop(columns=[0,1,2,3,8,9,10,11,12,13,14,15])
+# df_test_data_z.columns = [0,1,2,3]
+# print(df_test_data)
 
 
 if physics_cuts:
 
 
+    ###############
 
     dvpi0p = df_nflow_data
+    
     #dvpi0p = df_test_data
+
+    e=4
+    dvpi0p.loc[:,'pmass'] = np.sqrt(dvpi0p[e]**2-dvpi0p[e+1]**2-dvpi0p[e+2]**2-dvpi0p[e+3]**2)/0.938
+
+
+   
+    dvpi0p.loc[:, "Gpx"] = dvpi0p.loc[:, 9]
+    dvpi0p.loc[:, "Gpy"] = dvpi0p.loc[:, 10]
+    dvpi0p.loc[:, "Gpz"] = dvpi0p.loc[:, 11]
+    dvpi0p.loc[:, "Gpx2"] = dvpi0p.loc[:, 13]
+    dvpi0p.loc[:, "Gpy2"] = dvpi0p.loc[:, 14]
+    dvpi0p.loc[:, "Gpz2"] = dvpi0p.loc[:, 15]
+    gam1 = [dvpi0p['Gpx'], dvpi0p['Gpy'], dvpi0p['Gpz']]
+    gam2 = [dvpi0p['Gpx2'], dvpi0p['Gpy2'], dvpi0p['Gpz2']]
+
+
+    
+
+    pi0 = [dvpi0p['Gpx']+dvpi0p['Gpx2'], dvpi0p['Gpy']+dvpi0p['Gpy2'], dvpi0p['Gpz']+dvpi0p['Gpz2']]
+    def dot(vec1, vec2):
+        # dot product of two 3d vectors
+        return vec1[0]*vec2[0]+vec1[1]*vec2[1]+vec1[2]*vec2[2]
+    def mag(vec1):
+        # L2 norm of vector
+        return np.sqrt(dot(vec1, vec1))
+
+    dvpi0p.loc[:, "Mpi0"] = np.sqrt((mag(gam1)+mag(gam2))**2 - mag(pi0)**2)
+    
+    
+
+    df = dvpi0p
+
+
+
+    e = 0
+    df['protonE'] = df[4]
+    df['Etot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    e = 1
+    df['pxtot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    e = 2
+    df['pytot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    e = 3
+    df['pztot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    df['NetE'] = df['Etot']**2 - df['pxtot']**2 - df['pytot']**2 - df['pztot']**2
+
+    df.to_pickle("16_feature_pion.pkl")
+
+
+    #dvpi0p = dvpi0p.query("pmass<0.945 and pmass>0.931")
+    #df = df.query('NetE<22.5 and NetE>19.5')
+    #df = df.query('Mpi0<0.16 and Mpi0>0.11')
+
+    df["Mpi0"] = df["Mpi0"]
+
+    bin_size = [100,100]
+
+    var_name = 'Mpi0'
+    xvals = df[var_name]
+
+    ic(df.mean())
+    ###############
+    ###############
+
+    dvpi0p = df_test_data
 
     e=4
     dvpi0p.loc[:,'pmass'] = np.sqrt(dvpi0p[e]**2-dvpi0p[e+1]**2-dvpi0p[e+2]**2-dvpi0p[e+3]**2)/0.938
@@ -132,12 +199,14 @@ if physics_cuts:
     #df = df.query('NetE<22.5 and NetE>19.5')
     #df = df.query('Mpi0<0.16 and Mpi0>0.11')
 
-    df["Mpi0"] = df["Mpi0"]/.135
+    df["Mpi0"] = df["Mpi0"]
 
     bin_size = [100,100]
 
     var_name = 'Mpi0'
-    xvals = df[var_name]
+    xvals2 = df[var_name]
+    ###############
+
 
     
     #x_name = "Gamma-Gamma Invariant Mass (GeV)"
@@ -145,11 +214,11 @@ if physics_cuts:
     output_dir = "./"
     #ranges = "none"
     #ranges = [12,28,100]
-    ranges = [.25,1.75,100]
+    ranges = [.02,.2,100]
     print("PLOTTTING")
-    make_histos.plot_1dhist(xvals,[x_name,],ranges=ranges,second_x=None,annotation=None,
+    make_histos.plot_1dhist(xvals,[x_name,],ranges=ranges,second_x=xvals2,annotation=None,
                      saveplot=False,pics_dir=output_dir,plot_title="Reconstructed Pion Mass, NF Sampled",
-                     density=False,proton_line=1,first_color="blue",xlabel_1="NF Data")
+                     density=False,proton_line=0.135,first_color="blue",xlabel_1="NF Data")
     
     sys.exit()
     x_data = df["Mpi0"]
