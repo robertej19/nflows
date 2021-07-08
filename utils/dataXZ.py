@@ -37,13 +37,17 @@ class dataXZ:
   read the data stored in pickle format
   the converting routine is at https://github.com/6862-2021SP-team3/hipo2pickle
   """
-  def __init__(self, standard = False, feature_subset = "all"):
+  def __init__(self, standard = False, feature_subset = "all", test=False):
     #use if already converted to cartesian
     #with open('data/pi0_cartesian_train.pkl', 'rb') as f:
        #x = np.array(pickle.load(f), dtype=np.float32)
 
     #Use if not already converted
-    with open('data/pi0.pkl', 'rb') as f:
+    if test:
+      print("Test flag is enabled")
+    fname = 'data/pi0_spherical_test.pkl' if test else 'data/pi0_spherical_train.pkl'
+    print(fname)
+    with open(fname, 'rb') as f:
         xz = np.array(pickle.load(f), dtype=np.float32)
         x = cartesian_converter(xz,type='x')
         z = cartesian_converter(xz,type='z')

@@ -41,15 +41,17 @@ print(dev)
 #feature_subset = [1,2,3,5,6,7,9,10,11,13,14,15] #Only 3 momenta (assuming PID is known)
 #feature_subset = [0,1,2,3] #Just electron features
 #feature_subset = [4,5,6,7] #Just proton features
-feature_subset = "all" #All 16 features
+#feature_subset = [8,9,10,11] #Just proton features
+feature_subset = [12,13,14,15] #Just proton features
+#feature_subset = "all" #All 16 features
 
 #These are parameters for the Normalized Flow model
-num_layers = 6
-num_hidden_features = 80
+num_layers = 10
+num_hidden_features = 10
 
 #These are training parameters
-num_epoch = 10000
-training_sample_size = 400
+num_epoch = 5000
+training_sample_size = 800
 
 
 if feature_subset == "all":
@@ -91,10 +93,10 @@ for i in range(num_epoch):
       print("Rate is {} seconds per epoch".format(elapsedTime/i))
       print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(num_epoch+1-i)))
       if ((i+1)%100) == 0:
-        torch.save(flow.state_dict(), "models/Cond/16features/TM-UMNN_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
+        torch.save(flow.state_dict(), "models/Cond/photon2/TM-UMNN_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,i,loss.item()))
 
-tm_name = "models/Cond/16features/TM-Final-UMNN_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
+tm_name = "models/Cond/photon2/TM-Final-UMNN_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,losses[-1])
 torch.save(flow.state_dict(), tm_name)
 print("trained model saved to {}".format(tm_name))

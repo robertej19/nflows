@@ -78,6 +78,9 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
         xmax =  ranges[1]
         num_xbins = ranges[2]
 
+    print(xmin)
+    print(xmax)
+
     x_bins = np.linspace(xmin, xmax, num_xbins) 
 
     plt.rcParams["font.family"] = "Times New Roman"
@@ -117,7 +120,7 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
              ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))  
 
     if proton_line:
-        plt.axvline(x=proton_line,color = 'r', linestyle = '-',label="Pion Mass",linewidth=3.5)
+        plt.axvline(x=proton_line,color = 'r', linestyle = '-',label="Proton Mass",linewidth=3.5)
         ax.legend(loc="best")
     # Creating plot
         
@@ -142,7 +145,7 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
         plt.ticklabel_format(axis="x",style="sci",scilimits=(0,0))
 
     if saveplot:
-        new_plot_title = plot_title.replace("/","").replace(" ","_").replace("$","").replace("^","").replace("\\","").replace(".","").replace("<","").replace(">","")
+        new_plot_title = plot_title.replace("/","").replace(" ","_").replace("$","").replace("^","").replace("\\","").replace(".","").replace("<","").replace(">","").replace("(GeV)","")
         print(new_plot_title)
         
 

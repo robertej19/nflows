@@ -31,8 +31,8 @@ from nflows.transforms.permutations import ReversePermutation
 #data_path = "gendata/4features/" #Just electorn features
 #data_path = "gendata/16features/" #All 16 features
 #data_path = "gendata/Cond/16features/maaf/"
-data_path = "gendata/Cond/16features/UMNN/"
-
+#data_path = "gendata/Cond/16features/UMNN/"
+data_path = "gendata/Cond/proton/UMNN/"
 
 
 physics_cuts = False
@@ -59,12 +59,9 @@ with open('data/pi0.pkl', 'rb') as f:
     z = cartesian_converter(xz,type='z')
         
 
-
 df_test_data = pd.DataFrame(x)
 df_test_data_z = pd.DataFrame(z)
-#df_nflow_data = df_test_data_z
 
-#df_test_data = df_test_data_all.sample(n=nflow_data_len)
 
 if len(df_nflow_data) > len(df_test_data):
     df_nflow_data = df_nflow_data.sample(n=len(df_test_data))
@@ -72,74 +69,25 @@ else:
     df_test_data = df_test_data.sample(n=len(df_nflow_data))
     df_test_data_z = df_test_data_z.sample(n=len(df_nflow_data))
 
-
-#df_nflow_data = df_nflow_data.sample(n=100000)
-#df_test_data = df_test_data.sample(n=100000)
+df_test_data = df_test_data.drop(columns=[0,1,2,3,8,9,10,11,12,13,14,15])
+df_test_data.columns = [0,1,2,3]
+df_test_data_z = df_test_data_z.drop(columns=[0,1,2,3,8,9,10,11,12,13,14,15])
+df_test_data_z.columns = [0,1,2,3]
+print(df_test_data)
 
 
 if physics_cuts:
-    df = df_nflow_data
-    #df = df_test_data
-    print(len(df.index))
-    # e = 0
-    # df['emass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
-
-    # e = 4
-    # df['pmass'] = np.sqrt(df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2)
-
-    # e = 8
-    # df['g1mass2'] = df[8]**2-df[9]**2-df[10]**2-df[11]**2
-
-    # e = 12
-    # df['g2mass2'] = df[12]**2-df[13]**2-df[14]**2-df[15]**2
-
-    # df['g1g2'] = 2*(df[8]*df[12]-df[9]*df[13]-df[10]*df[1]-df[11]*df[15])
-
-    # df['pimass2'] = df['g1mass2']+df['g1g2']+df['g2mass2']
 
 
-
-    # # e = 0
-    # # df['protonE'] = df[4]
-    # # df['Etot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    # # e = 1
-    # # df['pxtot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    # # e = 2
-    # # df['pytot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    # # e = 3
-    # # df['pztot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
-    # # df['NetE'] = np.sqrt(df['Etot']**2 - df['pxtot']**2 - df['pytot']**2 - df['pztot']**2)
-
-    # e = 0
-    # df['emass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
-    # epsilon = .5
-    # df2 = df.query("pimass2>({0}-{1}) and pimass2<({0}+{1})".format((.135*.135),epsilon))
-    # #df2 = df.query("NetE>(4.556-{}) and NetE<(4.556+{})".format(epsilon,epsilon))
-    # #df2 = df.query("protonE<1.475")#.format(epsilon,epsilon))
-    # print(df)
-
-    # df = df.head(len(df2.index))
-    # print(df2)
-    # #sys.exit()
-
-    if len(df_nflow_data) > len(df_test_data):
-        df_nflow_data_16 = df_nflow_data.sample(n=len(df_test_data))
-    else:
-        df_test_data = df_test_data.sample(n=len(df_nflow_data))
-
-
-
-
-
-    ##################################
 
     dvpi0p = df_nflow_data
     #dvpi0p = df_test_data
 
     e=4
-    dvpi0p.loc[:,'pmass'] = np.sqrt(dvpi0p[e]**2-dvpi0p[e+1]**2-dvpi0p[e+2]**2-dvpi0p[e+3]**2)
+    dvpi0p.loc[:,'pmass'] = np.sqrt(dvpi0p[e]**2-dvpi0p[e+1]**2-dvpi0p[e+2]**2-dvpi0p[e+3]**2)/0.938
 
 
+   
     dvpi0p.loc[:, "Gpx"] = dvpi0p.loc[:, 9]
     dvpi0p.loc[:, "Gpy"] = dvpi0p.loc[:, 10]
     dvpi0p.loc[:, "Gpz"] = dvpi0p.loc[:, 11]
@@ -148,6 +96,7 @@ if physics_cuts:
     dvpi0p.loc[:, "Gpz2"] = dvpi0p.loc[:, 15]
     gam1 = [dvpi0p['Gpx'], dvpi0p['Gpy'], dvpi0p['Gpz']]
     gam2 = [dvpi0p['Gpx2'], dvpi0p['Gpy2'], dvpi0p['Gpz2']]
+
 
     
 
@@ -161,73 +110,46 @@ if physics_cuts:
 
     dvpi0p.loc[:, "Mpi0"] = np.sqrt((mag(gam1)+mag(gam2))**2 - mag(pi0)**2)
     
-    dvpi0p16 = dvpi0p
-
-    #################################
-
-
-
-
-
-    #dvpi0p = df_nflow_data_16
-    dvpi0p = df_test_data
-
-    e=4
-    dvpi0p.loc[:,'pmass'] = np.sqrt(dvpi0p[e]**2-dvpi0p[e+1]**2-dvpi0p[e+2]**2-dvpi0p[e+3]**2)
-
-
-    dvpi0p.loc[:, "Gpx"] = dvpi0p.loc[:, 9]
-    dvpi0p.loc[:, "Gpy"] = dvpi0p.loc[:, 10]
-    dvpi0p.loc[:, "Gpz"] = dvpi0p.loc[:, 11]
-    dvpi0p.loc[:, "Gpx2"] = dvpi0p.loc[:, 13]
-    dvpi0p.loc[:, "Gpy2"] = dvpi0p.loc[:, 14]
-    dvpi0p.loc[:, "Gpz2"] = dvpi0p.loc[:, 15]
-    gam1 = [dvpi0p['Gpx'], dvpi0p['Gpy'], dvpi0p['Gpz']]
-    gam2 = [dvpi0p['Gpx2'], dvpi0p['Gpy2'], dvpi0p['Gpz2']]
-
     
 
-    pi0 = [dvpi0p['Gpx']+dvpi0p['Gpx2'], dvpi0p['Gpy']+dvpi0p['Gpy2'], dvpi0p['Gpz']+dvpi0p['Gpz2']]
-    def dot(vec1, vec2):
-        # dot product of two 3d vectors
-        return vec1[0]*vec2[0]+vec1[1]*vec2[1]+vec1[2]*vec2[2]
-    def mag(vec1):
-        # L2 norm of vector
-        return np.sqrt(dot(vec1, vec1))
-
-    dvpi0p.loc[:, "Mpi0"] = np.sqrt((mag(gam1)+mag(gam2))**2 - mag(pi0)**2)
-    
-    #dvpi0pX = dvpi0p.query("Mpi0<0.2 and Mpi0>0.07")
-    
-
-    #dvpi0pX["Mpi0"].hist(bins = 101)
-
-
-
-    #df = dvpi0p.query("Mpi0<0.138 and Mpi0>0.132")
     df = dvpi0p
-    # df["Mpi0"].hist(bins = 101)
-    # plt.show()
-    
 
-    print(len(df.index))
-    print(len(dvpi0p16.index))
 
+
+    e = 0
+    df['protonE'] = df[4]
+    df['Etot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    e = 1
+    df['pxtot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    e = 2
+    df['pytot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    e = 3
+    df['pztot'] = df[e] + df[e+4]+df[e+8]+df[e+12]
+    df['NetE'] = df['Etot']**2 - df['pxtot']**2 - df['pytot']**2 - df['pztot']**2
+
+
+    #dvpi0p = dvpi0p.query("pmass<0.945 and pmass>0.931")
+    #df = df.query('NetE<22.5 and NetE>19.5')
+    #df = df.query('Mpi0<0.16 and Mpi0>0.11')
+
+    df["Mpi0"] = df["Mpi0"]/.135
 
     bin_size = [100,100]
-    xvals2 = df['Mpi0']
 
-    xvals = dvpi0p16['Mpi0']
+    var_name = 'Mpi0'
+    xvals = df[var_name]
+
     
-    
-    x_name = "Gamma-Gamma Invariant Mass (GeV)"
+    #x_name = "Gamma-Gamma Invariant Mass (GeV)"
+    x_name = "Reconstructed Pion Mass (Reduced)"
     output_dir = "./"
     #ranges = "none"
-    ranges = [0,0.3,100]
-
+    #ranges = [12,28,100]
+    ranges = [.25,1.75,100]
+    print("PLOTTTING")
     make_histos.plot_1dhist(xvals,[x_name,],ranges=ranges,second_x=None,annotation=None,
                      saveplot=False,pics_dir=output_dir,plot_title="Reconstructed Pion Mass, NF Sampled",
-                     density=False,proton_line=0.135,first_color="blue",xlabel_1="NF Data")
+                     density=False,proton_line=1,first_color="blue",xlabel_1="NF Data")
     
     sys.exit()
     x_data = df["Mpi0"]
@@ -300,18 +222,24 @@ if gen_all_emd:
 
     emd_plot = plt.errorbar(x,ratio_2,yerr=ratio_std_2,fmt='o',label="EMD Ratio",linewidth=2)
     ideal_line = plt.axhline(y = 1, color = 'r', linestyle = '-',label="Ideal Case",linewidth=2)
-    plt.title("EMD Ratio, Gen vs. Recon")
+    plt.title("EMD Ratio, NF Sampled vs. Physics Data")
     #ax.legend([emd_plot, ideal_line])
     plt.legend(loc='upper center')
 
     plt.xlim([-.5,15.5])
     plt.ylim([0,10])
-    plt.show()
-    plotname = "nflow_emd_4.png"
+
+    #locs, labels = plt.xticks()  # Get the current locations and labels.
+    #xticks(np.arange(0, 1, step=0.2))  # Set label locations. 
+    #plt.xticks(np.arange(16), ['Energy', 'X-Mom.', 'Y-Mom.', 'Z-Mom.','Energy', 'X-Mom.', 'Y-Mom.', 'Z-Mom.','Energy', 'X-Mom.', 'Y-Mom.', 'Z-Mom.','Energy', 'X-Mom.', 'Y-Mom.', 'Z-Mom.' ])  # Set text labels.
+    plt.xticks(np.arange(16),np.arange(16))  # Set text labels.
+
+    #plt.show()
+    plotname = "nflow_emd_16_updated.png"
+
+
     plt.savefig(plotname)
     plt.close()
-
-
 
 if gen_emd_comp:
 
@@ -382,50 +310,58 @@ if gen_emd_comp:
 
 
 
-
-
-
-
 if gen_1d_histos:
     output_dir = "hists_1D/"
 
-    import itertools
-    parts = ["Electron","Proton","Photon 1","Photon 2"]
-    feat = ["Energy","X-Momentum","Y-Momentum","Z-Momentum"]
-    a = parts
-    b = feat
-    #names = map(''.join, itertools.chain(itertools.product(list1, list2), itertools.product(list2, list1)))
-    names = [r for r in itertools.product(a, b)]#: print r[0] + r[1]
+    # # import itertools
+    # # parts = ["Proton","Photon 1","Photon 2"]
+    # # feat = ["Energy (GeV)","X-Momentum (GeV)","Y-Momentum (GeV)","Z-Momentum (GeV)"]
+    # # a = parts
+    # # b = feat
+    # # #names = map(''.join, itertools.chain(itertools.product(list1, list2), itertools.product(list2, list1)))
+    # # names = [r for r in itertools.product(a, b)]#: print r[0] + r[1]
 
     
-    # df = df_nflow_data
-    # e = 0
-    # df['emass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
-    # epsilon = 2
-    # df_nflow_data = df.query("emass2>(0-{}) and emass2<(0+{})".format(epsilon,epsilon))
+    # # #df = df_nflow_data
+    # # # e = 0
+    # # # df['emass2'] = df[e]**2-df[e+1]**2-df[e+2]**2-df[e+3]**2
+    # # # epsilon = 2
+    # # # df_nflow_data = df.query("emass2>(0-{}) and emass2<(0+{})".format(epsilon,epsilon))
+    
+    # # df_test_data.columns = ["e",1,2,3]
+    # # df_nflow_data.columns = ["e",1,2,3]
+    # # print(df_test_data)
+    # # df_nflow_data = df_nflow_data.query("e<1.03")
+    # # df_test_data = df_test_data.query("e < 1.03")
+    # # print(df_test_data)
 
-    # if len(df_nflow_data) > len(df_test_data):
-    #     df_nflow_data = df_nflow_data.sample(n=len(df_test_data))
-    # else:
-    #     df_test_data = df_test_data.sample(n=len(df_nflow_data))
+    # # if len(df_nflow_data) > len(df_test_data):
+    # #     df_nflow_data = df_nflow_data.sample(n=len(df_test_data))
+    # # else:
+    # #     df_test_data = df_test_data.sample(n=len(df_nflow_data))
 
+    # # print(df_nflow_data)
+    # # print(df_test_data)
 
-    #Uncomment for plotting all 1D histograms
-    # for feature_ind in range(16):
-    #         name = names[feature_ind]
-    #         x_name = "{} {}".format(name[0],name[1])
-    #         print("Creating 1 D Histogram for: {} ".format(name))
-    #         emd_nflow, _, _ = meter(df_test_data.to_numpy(),df_nflow_data.to_numpy(),feature_ind)
-    #         xvals_1 = df_test_data[feature_ind]
-    #         xvals_2 = df_nflow_data[feature_ind]
-    #         make_histos.plot_1dhist(xvals_1,[x_name,],ranges="none",second_x=xvals_2,
-    #                 saveplot=False,pics_dir=output_dir,plot_title="{}, NF 4-Feature Model".format(x_name),density=True,
-    #                 annotation=emd_nflow,xlabel_1="Microphysics Data",xlabel_2="NF Model Sample")
-    # sys.exit()
+    # # df_test_data.columns = [0,1,2,3]
+    # # df_nflow_data.columns = [0,1,2,3]
 
-    # output_dir = "hists_2D_4F/"
-    saveplots = False
-    #saveplots = True
+    # # #Uncomment for plotting all 1D histograms
+    # # for feature_ind in range(4):
+    # #         name = names[feature_ind]
+    # #         x_name = "{} {}".format(name[0],name[1])
+    # #         print("Creating 1 D Histogram for: {} ".format(name))
+    # #         emd_nflow, _, _ = meter(df_test_data.to_numpy(),df_nflow_data.to_numpy(),feature_ind)
+    # #         xvals_1 = df_test_data[feature_ind]
+    # #         xvals_2 = df_nflow_data[feature_ind]
+    # #         make_histos.plot_1dhist(xvals_1,[x_name,],ranges="none",second_x=xvals_2,
+    # #                 saveplot=True,pics_dir=output_dir,plot_title="{}, NF 4-Feature Model".format(x_name),density=True,
+    # #                 annotation=emd_nflow,first_color="red",xlabel_1="Microphysics Data",xlabel_2="NF Model Sample")
+    # # sys.exit()
+
+    # # # output_dir = "hists_2D_4F/"
+    #saveplots = False
+    saveplots = True
 
     #interactive(True)
 
@@ -436,18 +372,18 @@ if gen_1d_histos:
     # title = "Proton $P_X$ vs. Photon 1 $P_Z$"
     # ranges = [[-.75,.75,100],[1,9,100]]
 
-    x,y = 4,7
+    x,y = 0,3
     var_names = ["Proton Energy","Proton Z-Momentum"]
     title = "Proton E vs. Proton $P_Z$"
     ranges = [[1,1.5,100],[0,1.2,100]]
 
-    #electron x mom, proton x mom
-    #x,y = 1,5 
-    #var_names = ["Electron X-Momentum","Proton X-Momentum"]
-    #title = "Electon $P_X$ vs. Proton $P_X$"
-    #ranges = [[-1.5,1.5,100],[-.75,.75,100]]
+    ######### electron x mom, proton x mom
+    # x,y = 1,5 
+    # var_names = ["Electron X-Momentum","Proton X-Momentum"]
+    # title = "Electon $P_X$ vs. Proton $P_X$"
+    # ranges = [[-1.5,1.5,100],[-.75,.75,100]]
 
-    #electron x mom, electron y mom
+    # #electron x mom, electron y mom
     # x,y = 1,2
     # var_names = ["Electron X-Momentum","Electron Y-Momentum"]
     # title = "Electon $P_X$ vs. Electron $P_Y$"
@@ -476,7 +412,7 @@ if gen_1d_histos:
 
     title_phys = title+ ", Physics Data"
     title_phys_z = title+ ", Gen Events Data"
-    title_nf = title + ", NF 16-Feature Cond Model"
+    title_nf = title + ", NF 4-Feature Cond Model"
     filename = title
     units = ["GeV","Gev"]
     x_data = df_test_data[x]

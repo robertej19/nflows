@@ -3,7 +3,7 @@ import matplotlib.patches as patches
 from PIL import Image, ImageDraw, ImageFont
 import sys
 
-plotname = "nflow_emd.png"
+plotname = "nflow_emd_16_updated.png"
 
 im = Image.open(plotname)
 
@@ -14,10 +14,10 @@ fig, ax = plt.subplots()
 img = im
 draw = ImageDraw.Draw(img)
 font = ImageFont.truetype(r'fonts/agane_bold.ttf', 28)
-draw.text((170, 520),"Electron",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
-draw.text((380, 520),"Proton",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
-draw.text((560, 520),"Photon 1",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
-draw.text((760, 520),"Photon 2",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
+draw.text((170, 320),"Electron",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
+draw.text((380, 320),"Proton",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
+draw.text((560, 320),"Photon 1",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
+draw.text((760, 320),"Photon 2",(0,0,0),font=font) # this will draw text with Blackcolor and 16 size
 
 image = im
 

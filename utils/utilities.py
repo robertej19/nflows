@@ -31,6 +31,10 @@ def make_model(num_layers,num_features,num_hidden_features,device):
             nn.ReLU(),
             nn.Linear(2*num_features, 2*num_features),
             nn.ReLU(),
+            nn.Linear(2*num_features, 2*num_features),
+            nn.ReLU(),
+            nn.Linear(2*num_features, 2*num_features),
+            nn.ReLU(),
             nn.Linear(2*num_features, 2*num_features)
             )
 
