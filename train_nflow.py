@@ -140,7 +140,7 @@ for i in range(num_epoch):
       print("Rate is {} seconds per epoch".format(elapsedTime/i))
       print("Total estimated run time is {}".format(elapsedTime+elapsedTime/i*(num_epoch+1-i)))
       if ((i+1)%100) == 0:
-        torch.save(flow.state_dict(), "models/Cond/QT/photon2/TM-UMNN_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
+        torch.save(flow.state_dict(), "models/Cond/QT/INV/photon2/TM-UMNN_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,i,loss.item()))
 
 plt.scatter(np.arange(0,len(losses)),losses)

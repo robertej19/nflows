@@ -48,8 +48,8 @@ class dataXZ:
     qt_data = 'data/pi0_spherical_train.pkl'
     with open(qt_data, 'rb') as fname:
         qt_xz = np.array(pickle.load(fname), dtype=np.float32)
-        qt_x = cartesian_converter(qt_xz,type='x')
-        qt_z = cartesian_converter(qt_xz,type='z')
+        qt_x = cartesian_converter(qt_xz,type='z')
+        qt_z = cartesian_converter(qt_xz,type='x')
 
         if feature_subset != "all": 
           qt_x = qt_x[:,feature_subset]
@@ -66,8 +66,8 @@ class dataXZ:
 
     with open(fname, 'rb') as f:
         xz = np.array(pickle.load(f), dtype=np.float32)
-        x = cartesian_converter(xz,type='x')
-        z = cartesian_converter(xz,type='z')
+        x = cartesian_converter(xz,type='z')
+        z = cartesian_converter(xz,type='x')
         
 
         if feature_subset != "all": 
