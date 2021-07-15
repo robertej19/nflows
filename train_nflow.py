@@ -30,6 +30,7 @@ from nflows.transforms.autoregressive import MaskedAffineAutoregressiveTransform
 from nflows.transforms.permutations import ReversePermutation
 
 
+outdir = "julypics/"
 # Define device to be used
 dev = "cuda:0" if torch.cuda.is_available() else "cpu"
 #dev = "cpu"
@@ -39,10 +40,11 @@ print(dev)
 #Define hyperparameters
 #The number of featuers is just the length of the feature subset, or 16 if "all"
 #feature_subset = [1,2,3,5,6,7,9,10,11,13,14,15] #Only 3 momenta (assuming PID is known)
-#feature_subset = [0,1,2,3] #Just electron features
-#feature_subset = [4,5,6,7] #Just proton features
-feature_subset = [8,9,10,11] #Just proton features
-#feature_subset = [12,13,14,15] #Just proton features
+
+#feature_subset = [1,2,3] #Just electron features
+#feature_subset = [5,6,7] #Just proton features
+feature_subset = [9,10,11] #Just photon 1 features
+#feature_subset = [13,14,15] #Just photon 2 features
 #feature_subset = "all" #All 16 features
 
 #These are parameters for the Normalized Flow model
@@ -62,6 +64,44 @@ else:
 
 #read the data, with the defined data class
 xz = dataXZ.dataXZ(feature_subset=feature_subset)
+
+# print("trying to sample")
+# sampleDict = xz.sample(100000)
+# x = sampleDict["x"][:, 0:num_features]
+# z = sampleDict["z"][:, 0:num_features]
+# x= x.detach().numpy()
+# z = z.detach().numpy()
+# print("trying to plot")
+
+# bin_size = [100,100]
+
+
+# plt.hist(x[:,0],color = "red", density=True,bins=100)
+# plt.savefig(outdir+"feature0"+"_noQT")
+# plt.close()
+
+# plt.hist(x[:,1],color = "red", density=True,bins=100)
+# plt.savefig(outdir+"feature1""_noQT")
+# plt.close()
+
+
+# plt.hist(x[:,2],color = "red", density=True,bins=100)
+# plt.savefig(outdir+"feature2""_noQT")
+# plt.close()
+
+
+# fig, ax = plt.subplots(figsize =(5, 3)) 
+# plt.hist2d(x[:,0], x[:,1],bins =bin_size,norm=mpl.colors.LogNorm())# cmap = plt.cm.nipy_spectral) 
+# plt.colorbar()
+# plt.show()
+
+
+# fig, ax = plt.subplots(figsize =(5, 3)) 
+# plt.hist2d(z[:,0], z[:,1],bins =bin_size,norm=mpl.colors.LogNorm())# cmap = plt.cm.nipy_spectral) 
+# plt.colorbar()
+# plt.show()
+
+#sys.exit()
 
 
 #construct an nflow model
