@@ -41,8 +41,8 @@ print(dev)
 #feature_subset = [1,2,3,5,6,7,9,10,11,13,14,15] #Only 3 momenta (assuming PID is known)
 #feature_subset = [0,1,2,3] #Just electron features
 #feature_subset = [4,5,6,7] #Just proton features
-#feature_subset = [8,9,10,11] #Just proton features
-feature_subset = [12,13,14,15] #Just proton features
+feature_subset = [8,9,10,11] #Just proton features
+#feature_subset = [12,13,14,15] #Just proton features
 #feature_subset = "all" #All 16 features
 
 #These are parameters for the Normalized Flow model
@@ -50,7 +50,7 @@ num_layers = 10
 num_hidden_features = 10
 
 #These are training parameters
-num_epoch = 5000
+num_epoch = 3000
 training_sample_size = 800
 
 
@@ -67,6 +67,7 @@ xz = dataXZ.dataXZ(feature_subset=feature_subset)
 #construct an nflow model
 flow, optimizer = make_model(num_layers,num_features,num_hidden_features,device)
 print("number of params: ", sum(p.numel() for p in flow.parameters()))
+#scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.98)
 
 
 start = datetime.now()
@@ -74,6 +75,7 @@ start_time = start.strftime("%H:%M:%S")
 print("Start Time =", start_time)
 losses = []
 for i in range(num_epoch):
+
     sampleDict = xz.sample(training_sample_size)
     x_train = sampleDict["x"][:, 0:num_features].to(device)
     z_train = sampleDict["z"][:, 0:num_features].to(device)
@@ -83,11 +85,16 @@ for i in range(num_epoch):
 
     loss.backward()
     optimizer.step()
+    ## scheduler.step()
+    #print('Epoch-{0} lr: {1}'.format(i, optimizer.param_groups[0]['lr']))
     losses.append(loss.item())
-
-    if ((i+1)%10) == 0:
+    print("Loss is {}".format(loss.item()))
+    if ((i+1)%200) == 0:
       now = datetime.now()
       elapsedTime = (now - start )
+      plt.scatter(np.arange(0,len(losses)),losses)
+      plt.show()
+
       print("On step {} - loss {:.2f}, Current Time = {}".format(i,loss.item(),now.strftime("%H:%M:%S")))
       print("Elapsed time is {}".format(elapsedTime))
       print("Rate is {} seconds per epoch".format(elapsedTime/i))
@@ -95,6 +102,9 @@ for i in range(num_epoch):
       if ((i+1)%100) == 0:
         torch.save(flow.state_dict(), "models/Cond/photon2/TM-UMNN_{}_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,i,loss.item()))
+
+plt.scatter(np.arange(0,len(losses)),losses)
+plt.show()
 
 tm_name = "models/Cond/photon2/TM-Final-UMNN_{}_{}_{}_{}_{:.2f}.pt".format(num_features,
           num_layers,num_hidden_features,training_sample_size,losses[-1])
