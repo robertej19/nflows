@@ -29,42 +29,45 @@ from nflows.transforms.permutations import ReversePermutation
 
 from icecream import ic
 
-# # df_16 = pd.read_pickle("16_feature_pion.pkl")
-# # df_4 = pd.read_pickle("4_feature_pion.pkl")
+output_dir = "julypics/"
+#df_16 = pd.read_pickle("16_feature_pion.pkl")
+df_16 = pd.read_pickle("4_feature_pion_QT.pkl")
+df_4 = pd.read_pickle("4_feature_pion.pkl")
 
 
-# # if len(df_16) > len(df_4):
-# #     df_16 = df_16.head(len(df_4))
-# # else:
-# #     df_4 = df_4.head(len(df_16))
-
-
-
-
-# # bin_size = [100,100]
-
-# # var_name = 'Mpi0'
-# # xvals = df_16[var_name]
-# # xvals = df_4['recon_Mpi0']
-# # xvals2 = df_4['nf_Mpi0']
-# # ###############
+if len(df_16) > len(df_4):
+    df_16 = df_16.head(len(df_4))
+else:
+    df_4 = df_4.head(len(df_16))
 
 
 
 
+bin_size = [100,100]
 
-# # #x_name = "Gamma-Gamma Invariant Mass (GeV)"
-# # x_name = "Reconstructed Pion Mass (GeV)"
-# # output_dir = "./"
-# # #ranges = "none"
-# # #ranges = [12,28,100]
-# # ranges = [.02,.3,100]
-# # print("PLOTTTING")
-# # make_histos.plot_1dhist(xvals,[x_name,],ranges=ranges,second_x=xvals2,annotation="yes",
-# #                     saveplot=False,pics_dir=output_dir,plot_title="Reconstructed Pion Mass, NF Sampled",
-# #                     density=True,proton_line=0.135,first_color="green",xlabel_1="Physics Recon. Data",xlabel_2="4-Feature Model")
+#var_name = 'Mpi0' #For use with old 16 feature model
+#xvals = df_16[var_name]#For use with old 16 feature model
+xvals = df_16['nf_Mpi0']
+xvals3 = df_4['recon_Mpi0']
+xvals2 = df_4['nf_Mpi0']
+###############
 
 
+
+
+
+#x_name = "Gamma-Gamma Invariant Mass (GeV)"
+x_name = "Reconstructed Pion Mass (GeV)"
+#ranges = "none"
+#ranges = [12,28,100]
+ranges = [.02,.3,100]
+print("PLOTTTING")
+make_histos.plot_1dhist(xvals3,[x_name,],ranges=ranges,second_x=xvals2,annotation="yes",third_x=xvals,xlabel_3 = "QT-3-Feature Model",
+                    saveplot=False,pics_dir=output_dir,plot_title="Reconstructed Pion Mass, (4 Feature) and (3 Feature with QT) NF Models vs. Standard Simulations",
+                    density=True,proton_line=0.135,first_color="red",xlabel_1="Physics Recon. Data",xlabel_2="4-Feature Model")
+
+
+sys.exit()
 
 df_4 = pd.read_pickle("4_feature_pion.pkl")
 ic(df_4)

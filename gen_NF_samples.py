@@ -37,27 +37,38 @@ from nflows.transforms.permutations import ReversePermutation
 #model_name = "TM-UMNN_16_6_80_400_3999_-42.91.pt"
 #feature_subset = "all" #All 16 features
 
-#Proton:
-model_path = "models/Cond/proton/"
-model_name = "TM-UMNN_4_10_10_800_2599_-13.20.pt"
-feature_subset = [4,5,6,7] #Just proton features
+# #Proton:
+# model_path = "models/Cond/proton/"
+# model_name = "TM-UMNN_4_10_10_800_2599_-13.20.pt"
+# feature_subset = [4,5,6,7] #Just proton features
 
 
 # #Photon 1:
 # model_path = "models/Cond/photon1/"
 # model_name = "TM-UMNN_4_10_10_800_3899_-10.15.pt"
 # feature_subset = [8,9,10,11] #Just photon1 features
+# For QT:
+model_path = "models/Cond/QT/photon1/"
+model_name = "TM-UMNN_3_10_10_800_1399_-5.57.pt"
+feature_subset = [9,10,11]
+
 
 #Photon 2:
 # model_path = "models/Cond/photon2/"
 # model_name = "TM-UMNN_4_10_10_800_799_-10.20.pt"
 # feature_subset = [12,13,14,15] #Just photon2 features
+# For QT:
+# model_path = "models/Cond/QT/photon2/"
+# model_name = "TM-UMNN_3_10_10_800_1599_-5.98.pt"
+# feature_subset = [13,14,15]
 
 
 
 #Initialize dataXZ object for quantile inverse transform
 xz = dataXZ.dataXZ(feature_subset=feature_subset,test=True)
-#QuantTran = xz.qt
+QuantTran_x = xz.qt_x
+QuantTran_z = xz.qt_z
+
 
 
 
@@ -107,9 +118,8 @@ flow.load_state_dict(torch.load(model_path+model_name))
 flow.eval()
 
 maxloops = 100 #Number of overall loops
-max_range = 10#Number of sets per loop
+max_range = 5#Number of sets per loop
 sample_size = 1000 #Number of samples per set
-
 
 
 
@@ -138,6 +148,18 @@ for loop_num in range(maxloops):
             context_val = torch.tensor(z, dtype=torch.float32).to(device)
             val_gen = flow.sample(1,context=context_val).cpu().detach().numpy().reshape((sample_size,-1))
 
+
+
+            print("AFTER QT")
+            val_gen = QuantTran_x.inverse_transform(val_gen)
+            x = QuantTran_x.inverse_transform(x)
+            z = QuantTran_z.inverse_transform(z)
+
+            # print(val_gen)
+            # print(x)
+            # print(z)
+
+
             zs.append(val_gen)
             true_zs.append(z)
             recon_x.append(x)
@@ -149,19 +171,25 @@ for loop_num in range(maxloops):
         X = np.concatenate(zs)
         true_Z = np.concatenate(true_zs)
         recon_x = np.concatenate(recon_x)
+        print("After first cat")
         a = pd.DataFrame(true_Z)
-        a.columns = ["gen_E","gen_Px","gen_Py","gen_Pz"]
+        #a.columns = ["gen_E","gen_Px","gen_Py","gen_Pz"]
+        a.columns = ["gen_Px","gen_Py","gen_Pz"]
+
         b = pd.DataFrame(recon_x)
-        b.columns = ["recon_E","recon_Px","recon_Py","recon_Pz"]
+        #b.columns = ["recon_E","recon_Px","recon_Py","recon_Pz"]
+        b.columns = ["recon_Px","recon_Py","recon_Pz"]
+
         c = pd.DataFrame(X)
-        c.columns = ["nf_E","nf_Px","nf_Py","nf_Pz"]
+        #c.columns = ["nf_E","nf_Px","nf_Py","nf_Pz"]
+        c.columns = ["nf_Px","nf_Py","nf_Pz"]
 
 
         data = [a,b,c]
         #z = QuantTran.inverse_transform(X)
         df = pd.concat(data,axis=1)
         print(df)
-        df.to_pickle("gendata/Relational/proton_1M/GenData_UMNN_{}_{}_{}_{}_{}_{}.pkl".format(num_features,
+        df.to_pickle("gendata/Relational/QT/photon_1/GenData_UMNN_{}_{}_{}_{}_{}_{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")

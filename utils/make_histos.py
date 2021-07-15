@@ -72,9 +72,9 @@ def plot_2dhist(x_data,y_data,var_names,ranges="none",colorbar=True,
     else:
         plt.show()
 
-def plot_1dhist(x_data,vars,ranges="none",second_x=None,
+def plot_1dhist(x_data,vars,ranges="none",second_x=None,third_x=None,xlabel_3="third dataset",
             saveplot=False,pics_dir="none",plot_title="none",first_color="blue",sci_on=False,
-            density=False,annotation="yes",xlabel_1="first dataset",xlabel_2="second dataste",
+            density=False,annotation="yes",xlabel_1="first dataset",xlabel_2="second dataset",
             proton_line=False):
     
     # Initalize parameters
@@ -97,7 +97,7 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
     plt.rcParams["font.family"] = "Times New Roman"
     plt.rcParams["font.size"] = "20"
 
-    fig, ax = plt.subplots(figsize =(10, 7)) 
+    fig, ax = plt.subplots(figsize =(20, 14)) 
 
 
     y, x = np.histogram(x_data, bins=x_bins)
@@ -107,7 +107,7 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
     # Plot previously histogrammed data
     #ax = pdf.plot(lw=2, label='PDF', legend=True)
     w = abs(hist.index[1]) - abs(hist.index[0])
-    bar_0_10 = ax.bar(hist.index, hist.values, width=w,  align='center',color=first_color, alpha = .5,label=xlabel_1)
+    bar_0_10 = ax.bar(hist.index, hist.values, width=w,  align='center',color=first_color, alpha = .4,label=xlabel_1)
     #ax.legend(['PDF', 'Random Samples'])
 
     print(annotation)
@@ -119,18 +119,43 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
         # Plot previously histogrammed data
         #ax = pdf.plot(lw=2, label='PDF', legend=True)
         w = abs(hist.index[1]) - abs(hist.index[0])
-        bar_10_100 = ax.bar(hist.index, hist.values, width=w,  align='center',color='blue', alpha = 0.5)
+        bar_10_100 = ax.bar(hist.index, hist.values, width=w,  align='center',color='blue', alpha = 0.4)
         #bar_0_10 = ax.bar(np.arange(0,10), np.arange(1,11), color="k")
         #bar_0_10 = ax.hist(range=[xmin,xmax], color=first_color, label=xlabel_1)# cmap = plt.cm.nipy_spectral) 
+
+        if third_x is not None:
+            y, x = np.histogram(third_x, bins=x_bins)
+            x = [(a+x[i+1])/2.0 for i,a in enumerate(x[0:-1])]
+            hist = pd.Series(y, x)
+
+            # Plot previously histogrammed data
+            #ax = pdf.plot(lw=2, label='PDF', legend=True)
+            w = abs(hist.index[1]) - abs(hist.index[0])
+            bar_20_100 = ax.bar(hist.index, hist.values, width=w,  align='center',color='green', alpha = 0.4)
+            #bar_0_10 = ax.bar(np.arange(0,10), np.arange(1,11), color="k")
+            #bar_0_10 = ax.hist(range=[xmin,xmax], color=first_color, label=xlabel_1)# cmap = plt.cm.nipy_spectral) 
+                    # create blank rectangle
+            if annotation:
+                print("ANNI IS NOT NONE")
+                extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none', linewidth=0)
+                #ax.legend([bar_0_10, bar_10_100,extra], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"EMD Value: {:.4f}".format(annotation)))  
+                #ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))
+                
 
         # create blank rectangle
         if annotation:
             print("ANNI IS NOT NONE")
             extra = Rectangle((0, 0), 1, 1, fc="w", fill=False, edgecolor='none', linewidth=0)
             #ax.legend([bar_0_10, bar_10_100,extra], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"EMD Value: {:.4f}".format(annotation)))  
-            ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))  
+            #ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))
+            if third_x is not None:
+                
+                ax.legend([bar_0_10, bar_10_100, bar_20_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"  {}  ".format(xlabel_3)))  
+            else:
+                ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_3)))  
+
         else:
-             ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))  
+             ax.legend([bar_0_10, bar_10_100, bar_20_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"  {}  ".format(xlabel_3)))  
 
     if proton_line:
         plt.axvline(x=proton_line,color = 'k', linestyle = '-',label="Pion Mass",linewidth=3.5)
@@ -161,7 +186,8 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,
         new_plot_title = plot_title.replace("/","").replace(" ","_").replace("$","").replace("^","").replace("\\","").replace(".","").replace("<","").replace(">","").replace("(GeV)","")
         print(new_plot_title)
         
-
+        print("SAVING PLOTS!")
+        print(pics_dir + new_plot_title+".png")
 
         plt.savefig(pics_dir + new_plot_title+".png")
         plt.close()

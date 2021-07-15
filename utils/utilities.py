@@ -65,7 +65,8 @@ def make_model(num_layers,num_features,num_hidden_features,device):
     #Uncomment the below if float32
     flow = Flow(transform, base_dist).to(device)
     
-    optimizer = optim.Adam(flow.parameters(), lr = 2.5e-4) #best results observed before using scheduler
+    #optimizer = optim.Adam(flow.parameters(), lr = 2.5e-4) #best results observed before using scheduler
+    optimizer = optim.Adam(flow.parameters()) #best results observed before using scheduler
     #optimizer = optim.Adam(flow.parameters(), lr = 1e-3) #for using scheduler
 
 
