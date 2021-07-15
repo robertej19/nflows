@@ -9,7 +9,7 @@ from icecream import ic
 from matplotlib.patches import Rectangle
 import pandas as pd
 
-def plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
+def plot_2dhist(x_data,y_data,var_names,ranges="none",colorbar=True,
             saveplot=False,pics_dir="none",plot_title="none",
             filename="ExamplePlot",units=["",""]):
     
@@ -18,12 +18,23 @@ def plot_2dhist(x_data,y_data,var_names,ranges,colorbar=True,
     # Initalize parameters
     x_name = var_names[0]
     y_name = var_names[1]
-    xmin = ranges[0][0]
-    xmax =  ranges[0][1]
-    num_xbins = ranges[0][2]
-    ymin = ranges[1][0]
-    ymax =  ranges[1][1]
-    num_ybins = ranges[1][2]
+
+    if ranges=="none":
+        xmin = 0.99*min(x_data)
+        xmax =  1.01*max(x_data)
+        num_xbins = 100#int(len(x_data)/)
+        ymin = 0.99*min(y_data)
+        ymax =  1.01*max(y_data)
+        num_ybins = 100#int(len(x_data)/)
+    else:
+        xmin = ranges[0][0]
+        xmax =  ranges[0][1]
+        num_xbins = ranges[0][2]
+        ymin = ranges[1][0]
+        ymax =  ranges[1][1]
+        num_ybins = ranges[1][2]
+
+
     x_bins = np.linspace(xmin, xmax, num_xbins) 
     y_bins = np.linspace(ymin, ymax, num_ybins) 
 
