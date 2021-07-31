@@ -48,9 +48,15 @@ from nflows.transforms.permutations import ReversePermutation
 # model_name = "TM-UMNN_4_10_10_800_3899_-10.15.pt"
 # feature_subset = [8,9,10,11] #Just photon1 features
 # For QT:
-model_path = "models/Cond/QT/photon1/"
-model_name = "TM-UMNN_3_10_10_800_1399_-5.57.pt"
+# model_path = "models/Cond/QT/photon1/"
+# model_name = "TM-UMNN_3_10_10_800_1399_-5.57.pt"
+# feature_subset = [9,10,11]
+# #For INV
+model_path = "models/Cond/QT/INV/photon1/"
+model_name = "TM-UMNN_3_10_10_800_1399_-5.78.pt"
 feature_subset = [9,10,11]
+
+
 
 
 #Photon 2:
@@ -60,6 +66,10 @@ feature_subset = [9,10,11]
 # For QT:
 # model_path = "models/Cond/QT/photon2/"
 # model_name = "TM-UMNN_3_10_10_800_1599_-5.98.pt"
+# feature_subset = [13,14,15]
+# #For INV
+# model_path = "models/Cond/QT/INV/photon2/"
+# model_name = "TM-UMNN_3_10_10_800_1199_-5.53.pt"
 # feature_subset = [13,14,15]
 
 
@@ -189,7 +199,7 @@ for loop_num in range(maxloops):
         #z = QuantTran.inverse_transform(X)
         df = pd.concat(data,axis=1)
         print(df)
-        df.to_pickle("gendata/Relational/QT/photon_1/GenData_UMNN_{}_{}_{}_{}_{}_{}.pkl".format(num_features,
+        df.to_pickle("gendata/Relational/QT/INV/photon_1/GenData_UMNN_{}_{}_{}_{}_{}_{}.pkl".format(num_features,
                 num_layers,num_hidden_features,training_sample_size,training_loss,loop_num))
     except Exception as e:
         print("sorry, that didn't work, exception was:")

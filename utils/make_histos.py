@@ -152,7 +152,7 @@ def plot_1dhist(x_data,vars,ranges="none",second_x=None,third_x=None,xlabel_3="t
                 
                 ax.legend([bar_0_10, bar_10_100, bar_20_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"  {}  ".format(xlabel_3)))  
             else:
-                ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_3)))  
+                ax.legend([bar_0_10, bar_10_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2)))  
 
         else:
              ax.legend([bar_0_10, bar_10_100, bar_20_100], ("  {}  ".format(xlabel_1),"  {}  ".format(xlabel_2),"  {}  ".format(xlabel_3)))  
